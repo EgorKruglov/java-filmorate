@@ -15,7 +15,6 @@ import ru.yandex.practicum.filmorate.extraExceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.util.IdGenerator;
 import ru.yandex.practicum.filmorate.validators.FilmValidator;
-
 import javax.validation.Valid;
 
 @RestController
