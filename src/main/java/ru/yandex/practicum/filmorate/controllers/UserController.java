@@ -14,7 +14,6 @@ import ru.yandex.practicum.filmorate.database.Users;
 import ru.yandex.practicum.filmorate.extraExceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.util.IdGenerator;
-
 import javax.validation.Valid;
 
 @RestController
