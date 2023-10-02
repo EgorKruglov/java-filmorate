@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,35 +9,29 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.database.Films;
+import ru.yandex.practicum.filmorate.database.FilmStorage;
 import ru.yandex.practicum.filmorate.extraExceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.util.IdGenerator;
-import ru.yandex.practicum.filmorate.validators.FilmValidator;
 
 import javax.validation.Valid;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/films")
 public class FilmController {
 
-    private final static Logger log = LoggerFactory.getLogger(FilmController.class);
-    private final Films films = new Films();
+    private final FilmStorage films = new FilmStorage();
 
-    @PostMapping("/add")
+    @PostMapping()
     public ResponseEntity<?> addFilm(@Valid @RequestBody Film film, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder errors = new StringBuilder();
             bindingResult.getFieldErrors().forEach(error ->
                     errors.append(error.getDefaultMessage()).append("\n")
             );
-            log.info("Ошибка валидации" + errors, new ValidationException());
+            log.info("Ошибка валидации " + errors + " ", new ValidationException());
             return ResponseEntity.badRequest().body(errors.toString());
-        }
-
-        if (!FilmValidator.isValid(film)) {
-            log.info("Ошибка валидации", new ValidationException());
-            return ResponseEntity.badRequest().body("Некорректные данные фильма");
         }
 
         film.setId(IdGenerator.generate());
@@ -52,7 +45,7 @@ public class FilmController {
         return ResponseEntity.ok(film);
     }
 
-    @PutMapping("/update")
+    @PutMapping()
     public ResponseEntity<?> updateFilm(@Valid @RequestBody Film film, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -60,7 +53,7 @@ public class FilmController {
             bindingResult.getFieldErrors().forEach(error ->
                     errors.append(error.getDefaultMessage()).append("\n")
             );
-            log.info("Ошибка валидации" + errors, new ValidationException());
+            log.info("Ошибка валидации " + errors, new ValidationException());
             return ResponseEntity.badRequest().body(errors.toString());
         }
 
@@ -73,7 +66,7 @@ public class FilmController {
         return ResponseEntity.ok(film);
     }
 
-    @GetMapping("/getAll")
+    @GetMapping()
     public ResponseEntity<?> getFilms() {
         log.info("Отправлен список всех фильмов");
         return ResponseEntity.ok(films.getFilms());

@@ -8,7 +8,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -23,32 +22,32 @@ public class FilmValidationTests {
     private TestRestTemplate restTemplate;
 
     @Test
-    public void testAllIsOk() {
+    public void addFilmSuccess() {
         Film film = new Film();
         film.setName("Valid name");
         film.setDescription("Valid description");
         film.setReleaseDate(LocalDate.of(2022, 1, 1));
         film.setDuration(Duration.ofMinutes(120));
 
-        ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl() + "/add", film, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), film, String.class);
         assert response.getStatusCode() == HttpStatus.OK;
     }
 
     @Test
-    public void testInvalidName() {
+    public void addFilmBlankName() {
         Film film = new Film();
         film.setName("");
         film.setDescription("Valid description");
         film.setReleaseDate(LocalDate.of(2022, 1, 1));
         film.setDuration(Duration.ofMinutes(120));
 
-        ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl() + "/add", film, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), film, String.class);
         assert response.getStatusCode() == HttpStatus.BAD_REQUEST;
         assert response.getBody().contains("Название фильма не может быть пустым");
     }
 
     @Test
-    public void testDescriptionMaxLengthExceeded() {
+    public void addFilmOverDescription() {
         Film film = new Film();
         film.setName("Valid Film");
         film.setDescription("A very long description that exceeds the maximum allowed length of 200 characters. A very " +
@@ -57,35 +56,35 @@ public class FilmValidationTests {
         film.setReleaseDate(LocalDate.of(2022, 1, 1));
         film.setDuration(Duration.ofMinutes(120));
 
-        ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl() + "/add", film, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), film, String.class);
         assert response.getStatusCode() == HttpStatus.BAD_REQUEST;
         assert response.getBody().contains("Описание должно быть меньше 200 символов");
     }
 
     @Test
-    public void testReleaseDateBeforeMinimumDate() {
+    public void addFilmAncientReleaseDAte() {
         Film film = new Film();
         film.setName("Valid Film");
         film.setDescription("Valid description");
         film.setReleaseDate(LocalDate.of(1800, 1, 1));
         film.setDuration(Duration.ofMinutes(120));
 
-        ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl() + "/add", film, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), film, String.class);
         assert response.getStatusCode() == HttpStatus.BAD_REQUEST;
-        assert response.getBody().contains("Некорректные данные фильма");
+        assert response.getBody().contains("Дата выпуска фильма должна быть после 28.12.1895 г.");
     }
 
     @Test
-    public void testNegativeDuration() {
+    public void addFilmNegativeDuration() {
         Film film = new Film();
         film.setName("Valid Film");
         film.setDescription("Valid description");
         film.setReleaseDate(LocalDate.of(2022, 1, 1));
         film.setDuration(Duration.ofMinutes(-30));
 
-        ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl() + "/add", film, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), film, String.class);
         assert response.getStatusCode() == HttpStatus.BAD_REQUEST;
-        assert response.getBody().contains("Некорректные данные фильма");
+        assert response.getBody().contains("Продолжительность фильма должна быть положительным числом");
     }
 
     private String getBaseUrl() {

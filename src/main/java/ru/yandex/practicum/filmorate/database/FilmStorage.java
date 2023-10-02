@@ -3,10 +3,11 @@ package ru.yandex.practicum.filmorate.database;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.HashMap;
+import java.util.Map;
 
-public class Films {
+public class FilmStorage {
 
-    HashMap<Integer, Film> films = new HashMap<>();
+    private final Map<Integer, Film> films = new HashMap<>();
 
     public Boolean addFilm(Film film) {
         if (films.containsKey(film.getId())) {
@@ -24,7 +25,7 @@ public class Films {
         return true;
     }
 
-    public HashMap<Integer, Film> getFilms() {
+    public Map<Integer, Film> getFilms() {
         return films;
     }
 }
