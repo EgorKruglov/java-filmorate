@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public class MovieReleaseDateValidator implements ConstraintValidator<MovieReleaseDate, LocalDate> {
 
-    private final LocalDate MIN_RELEASE_DATE = LocalDate.of(1895, 12, 28);
+    private static final LocalDate MIN_RELEASE_DATE = LocalDate.of(1895, 12, 28);
 
     @Override
     public void initialize(MovieReleaseDate constraintAnnotation) {
