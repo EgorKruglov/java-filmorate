@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.database.UserStorage;
 import ru.yandex.practicum.filmorate.extraExceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.util.IdGenerator;
+import ru.yandex.practicum.filmorate.util.IdGeneratorUsers;
 
 import javax.validation.Valid;
 import java.util.Map;
@@ -39,7 +39,7 @@ public class UserController {
             user.setName(user.getLogin());
         }
 
-        user.setId(IdGenerator.generate());
+        user.setId(IdGeneratorUsers.generate());
 
         if (!users.addUser(user)) {
             log.warn("Не удалось добавить пользователя id:" + user.getId());

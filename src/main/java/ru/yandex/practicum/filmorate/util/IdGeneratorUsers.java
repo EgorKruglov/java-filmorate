@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.util;
 
-public class IdGenerator {
+public class IdGeneratorUsers {
 
     private static int id = 1;
 

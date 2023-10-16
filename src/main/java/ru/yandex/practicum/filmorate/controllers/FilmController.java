@@ -13,7 +13,7 @@ import ru.yandex.practicum.filmorate.database.FilmStorage;
 import ru.yandex.practicum.filmorate.extraExceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.modelsForRequest.RequestFilm;
-import ru.yandex.practicum.filmorate.util.IdGenerator;
+import ru.yandex.practicum.filmorate.util.IdGeneratorFilms;
 
 import javax.validation.Valid;
 import java.time.Duration;
@@ -39,7 +39,7 @@ public class FilmController {
             return ResponseEntity.badRequest().body(Map.of("errors", errors.toString()));
         }
 
-        requestFilm.setId(IdGenerator.generate());
+        requestFilm.setId(IdGeneratorFilms.generate());
         Film film = new Film(requestFilm.getId(), // Создаём настоящий объект фильма из класса-обёртки
                 requestFilm.getName(),
                 requestFilm.getDescription(),
