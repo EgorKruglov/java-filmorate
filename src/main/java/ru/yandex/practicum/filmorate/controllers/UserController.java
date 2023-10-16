@@ -24,7 +24,7 @@ public class UserController {
 
     private final UserStorage users = new UserStorage();
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<?> addUser(@Valid  @RequestBody User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder errors = new StringBuilder();
@@ -50,7 +50,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<?> updateUser(@Valid @RequestBody User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder errors = new StringBuilder();
@@ -74,7 +74,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<?> getUsers() {
         log.info("Отправлен список всех пользователей");
         return ResponseEntity.ok(users.getUsers().values());

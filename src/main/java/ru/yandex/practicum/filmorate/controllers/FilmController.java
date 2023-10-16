@@ -27,7 +27,7 @@ public class FilmController {
 
     private final FilmStorage films = new FilmStorage();
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<?> addFilm(@Valid @RequestBody RequestFilm requestFilm, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -56,7 +56,7 @@ public class FilmController {
         return ResponseEntity.ok(requestFilm);
     }
 
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<?> updateFilm(@Valid @RequestBody RequestFilm requestFilm, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -83,7 +83,7 @@ public class FilmController {
         return ResponseEntity.ok(requestFilm);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<?> getFilms() {
         Map<Integer, Film> allFilms = films.getFilms();
         ArrayList<RequestFilm> requestFilms = new ArrayList<>();
