@@ -15,6 +15,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.util.IdGenerator;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -30,8 +31,8 @@ public class UserController {
             bindingResult.getFieldErrors().forEach(error ->
                     errors.append(error.getDefaultMessage()).append("\n")
             );
-            log.info("Ошибка валидации " + errors + " ", new ValidationException());
-            return ResponseEntity.badRequest().body(errors.toString());
+            log.info("Ошибка валидации " + errors + " ", new ValidationException(errors.toString()));
+            return ResponseEntity.badRequest().body(Map.of("errors", errors.toString()));
         }
 
         if (user.getName() == null) { // Если нет имени, использовать логин
@@ -42,7 +43,7 @@ public class UserController {
 
         if (!users.addUser(user)) {
             log.warn("Не удалось добавить пользователя id:" + user.getId());
-            return ResponseEntity.badRequest().body("Не удалось добавить пользователя");
+            return ResponseEntity.badRequest().body(Map.of("errors", "Не удалось добавить пользователя"));
         }
 
         log.info("Пользователь добавлен id:" + user.getId());
@@ -56,8 +57,8 @@ public class UserController {
             bindingResult.getFieldErrors().forEach(error ->
                     errors.append(error.getDefaultMessage()).append("\n")
             );
-            log.info("Ошибка валидации " + errors + " ", new ValidationException());
-            return ResponseEntity.badRequest().body(errors.toString());
+            log.info("Ошибка валидации " + errors + " ", new ValidationException(errors.toString()));
+            return ResponseEntity.badRequest().body(Map.of("errors", errors.toString()));
         }
 
         if (user.getName() == null) { // Если нет имени, использовать логин
@@ -66,7 +67,7 @@ public class UserController {
 
         if (!users.updateUser(user)) {
             log.warn("Не удалось обновить данные пользователя id:" + user.getId());
-            return ResponseEntity.badRequest().body("Не удалось обновить данные пользователя");
+            return ResponseEntity.status(404).body(Map.of("errors", "Не удалось обновить данные пользователя"));
         }
 
         log.info("Данные пользователя обновлены id:" + user.getId());
@@ -76,6 +77,6 @@ public class UserController {
     @GetMapping()
     public ResponseEntity<?> getUsers() {
         log.info("Отправлен список всех пользователей");
-        return ResponseEntity.ok(users.getUsers());
+        return ResponseEntity.ok(users.getUsers().values());
     }
 }

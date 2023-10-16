@@ -8,6 +8,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.modelsForRequest.RequestFilm;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -23,23 +24,25 @@ public class FilmValidationTests {
 
     @Test
     public void addFilmSuccess() {
-        Film film = new Film();
-        film.setName("Valid name");
-        film.setDescription("Valid description");
-        film.setReleaseDate(LocalDate.of(2022, 1, 1));
-        film.setDuration(Duration.ofMinutes(120));
+        RequestFilm film = new RequestFilm(
+                "Valid name",
+                "Valid description",
+                LocalDate.of(2022, 1, 1),
+                120);
 
         ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), film, String.class);
+        System.out.println(response);
+
         assert response.getStatusCode() == HttpStatus.OK;
     }
 
     @Test
     public void addFilmBlankName() {
-        Film film = new Film();
-        film.setName("");
-        film.setDescription("Valid description");
-        film.setReleaseDate(LocalDate.of(2022, 1, 1));
-        film.setDuration(Duration.ofMinutes(120));
+        RequestFilm film = new RequestFilm(
+                "",
+                "Valid description",
+                LocalDate.of(2022, 1, 1),
+                120);
 
         ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), film, String.class);
         assert response.getStatusCode() == HttpStatus.BAD_REQUEST;
@@ -48,13 +51,13 @@ public class FilmValidationTests {
 
     @Test
     public void addFilmOverDescription() {
-        Film film = new Film();
-        film.setName("Valid Film");
-        film.setDescription("A very long description that exceeds the maximum allowed length of 200 characters. A very " +
-                "long description that exceeds the maximum allowed length of 200 characters. eeeeeeeeeeeeeeeeeeeeeeeeee" +
-                "eeeeeeeeeeeeeeeeeeeeeeeee");
-        film.setReleaseDate(LocalDate.of(2022, 1, 1));
-        film.setDuration(Duration.ofMinutes(120));
+        RequestFilm film = new RequestFilm(
+                "Valid Film",
+                "A very long description that exceeds the maximum allowed length of 200 characters. A very " +
+                        "long description that exceeds the maximum allowed length of 200 characters. eeeeeeeeeeeeeeeeeee" +
+                        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+                LocalDate.of(2022, 1, 1),
+                120);
 
         ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), film, String.class);
         assert response.getStatusCode() == HttpStatus.BAD_REQUEST;
@@ -63,11 +66,11 @@ public class FilmValidationTests {
 
     @Test
     public void addFilmAncientReleaseDAte() {
-        Film film = new Film();
-        film.setName("Valid Film");
-        film.setDescription("Valid description");
-        film.setReleaseDate(LocalDate.of(1800, 1, 1));
-        film.setDuration(Duration.ofMinutes(120));
+        RequestFilm film = new RequestFilm(
+                "Valid name",
+                "Valid description",
+                LocalDate.of(1800, 1, 1),
+                120);
 
         ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), film, String.class);
         assert response.getStatusCode() == HttpStatus.BAD_REQUEST;
@@ -76,15 +79,15 @@ public class FilmValidationTests {
 
     @Test
     public void addFilmNegativeDuration() {
-        Film film = new Film();
-        film.setName("Valid Film");
-        film.setDescription("Valid description");
-        film.setReleaseDate(LocalDate.of(2022, 1, 1));
-        film.setDuration(Duration.ofMinutes(-30));
+        RequestFilm film = new RequestFilm(
+                "Valid name",
+                "Valid description",
+                LocalDate.of(2022, 1, 1),
+                -30);
 
         ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), film, String.class);
         assert response.getStatusCode() == HttpStatus.BAD_REQUEST;
-        assert response.getBody().contains("Продолжительность фильма должна быть положительным числом");
+        assert response.getBody().contains("Продолжительность фильма должна быть положительной");
     }
 
     private String getBaseUrl() {
