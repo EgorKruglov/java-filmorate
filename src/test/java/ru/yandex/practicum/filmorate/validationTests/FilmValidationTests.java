@@ -89,6 +89,6 @@ public class FilmValidationTests {
     }
 
     private String getBaseUrl() {
-        return "http://localhost:" + port + "/api/v1/films";
+        return "http://localhost:" + port + "/films";
     }
 }

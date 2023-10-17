@@ -104,6 +104,6 @@ public class UserValidationTests {
     }
 
     private String getBaseUrl() {
-        return "http://localhost:" + port + "/api/v1/users";
+        return "http://localhost:" + port + "/users";
     }
 }
