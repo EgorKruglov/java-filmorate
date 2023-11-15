@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-public class Film implements Comparable<Film>{
+public class Film implements Comparable<Film> {
 
     private final Integer id;
 
