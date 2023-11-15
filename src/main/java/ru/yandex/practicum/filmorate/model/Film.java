@@ -8,9 +8,11 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
-public class Film {
+public class Film implements Comparable<Film>{
 
     private final Integer id;
 
@@ -25,4 +27,19 @@ public class Film {
 
     @PositiveDuration(message = "Продолжительность фильма должна быть положительным числом")
     private final Duration duration;
+
+    private final Set<Integer> usersIdsWhoLiked = new HashSet<>();
+
+    public void addLike(Integer userId) {
+        usersIdsWhoLiked.add(userId);
+    }
+
+    public void deleteLike(Integer userId) {
+        usersIdsWhoLiked.remove(userId);
+    }
+
+    @Override
+    public int compareTo(Film f) {
+        return this.getUsersIdsWhoLiked().size() - f.getUsersIdsWhoLiked().size();
+    }
 }

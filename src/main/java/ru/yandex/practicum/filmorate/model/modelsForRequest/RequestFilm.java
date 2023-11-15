@@ -9,7 +9,8 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 /*Это вспомогательный класс-обёртка для получения фильма из запроса и отправки в ответе.
-* Основная причина его создания -- это необходимость получения и передачи duration в минутах. */
+* Основная причина его создания -- это необходимость получения и передачи duration в минутах, когда
+* duration тип Duration. */
 @Data
 public class RequestFilm {
 

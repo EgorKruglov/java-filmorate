@@ -23,6 +23,7 @@ public class UserValidationTests {
     @Test
     public void addUserSuccess() {
         User user = new User();
+        user.setName("");
         user.setEmail("valid@example.com");
         user.setLogin("valid_login");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -34,6 +35,7 @@ public class UserValidationTests {
     @Test
     public void addUserInvalidEmail() {
         User user = new User();
+        user.setName("");
         user.setEmail("invalid_email");
         user.setLogin("valid_login");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -46,6 +48,7 @@ public class UserValidationTests {
     @Test
     public void addUserBlankEmail() {
         User user = new User();
+        user.setName("");
         user.setEmail("");
         user.setLogin("valid_login");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -58,6 +61,7 @@ public class UserValidationTests {
     @Test
     public void addUserLoginWithSpaces() {
         User user = new User();
+        user.setName("");
         user.setEmail("valid@example.com");
         user.setLogin("invalid login with spaces");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -70,6 +74,7 @@ public class UserValidationTests {
     @Test
     public void addUserBlankLogin() {
         User user = new User();
+        user.setName("");
         user.setEmail("valid@example.com");
         user.setLogin("");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -82,6 +87,7 @@ public class UserValidationTests {
     @Test
     public void addUserWithoutName() {
         User user = new User();
+        user.setName("");
         user.setEmail("valid@example.com");
         user.setLogin("valid_login");
         user.setBirthday(LocalDate.of(1990, 1, 1));
@@ -94,6 +100,7 @@ public class UserValidationTests {
     @Test
     public void addUserBirthdayInFuture() {
         User user = new User();
+        user.setName("");
         user.setEmail("valid@example.com");
         user.setLogin("valid_login");
         user.setBirthday(LocalDate.now().plusDays(1));
