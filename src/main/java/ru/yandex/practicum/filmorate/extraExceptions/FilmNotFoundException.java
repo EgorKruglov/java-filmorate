@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.extraExceptions;
 
-public class FilmNotFoundException extends RuntimeException{
+public class FilmNotFoundException extends RuntimeException {
 
     public FilmNotFoundException() {
     }
