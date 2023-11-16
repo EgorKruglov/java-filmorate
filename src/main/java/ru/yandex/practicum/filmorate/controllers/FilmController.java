@@ -38,8 +38,7 @@ public class FilmController {
             bindingResult.getFieldErrors().forEach(error ->
                     errors.append(error.getDefaultMessage()).append("\n")
             );
-            log.info("Ошибка валидации " + errors + " ", new ValidationException(errors.toString()));
-            throw new ValidationException(errors.toString());
+            throw new ValidationException("Ошибка валидации фильма: " + errors);
         }
         RequestFilm film = filmService.addFilm(requestFilm);
         log.info("Фильм добавлен id: " + film.getId());
@@ -53,8 +52,7 @@ public class FilmController {
             bindingResult.getFieldErrors().forEach(error ->
                     errors.append(error.getDefaultMessage()).append("\n")
             );
-            log.info("Ошибка валидации " + errors, new ValidationException(errors.toString()));
-            throw new ValidationException(errors.toString());
+            throw new ValidationException("Ошибка валидации фильма: " + errors);
         }
         RequestFilm film = filmService.updateFilm(requestFilm);
         log.info("Данные фильма обновлены id:" + film.getId());

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.extraExceptions.UserIdEqualsFriendIdException;
@@ -13,7 +12,6 @@ import ru.yandex.practicum.filmorate.util.IdGeneratorUsers;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 @Service
 public class UserService {
 
@@ -49,7 +47,7 @@ public class UserService {
 
     public void addFriend(Integer userId, Integer friendId) {
         if (userId.equals(friendId)) {
-            throw new UserIdEqualsFriendIdException("Передано два одинаковых id");
+            throw new UserIdEqualsFriendIdException("Передано два одинаковых id при добавлении друга");
         }
         User friend = userStorage.getUserById(friendId);
         User user = userStorage.getUserById(userId);
@@ -59,11 +57,11 @@ public class UserService {
 
     public void deleteFriend(Integer userId, Integer friendId) {
         if (userId.equals(friendId)) {
-            throw new UserIdEqualsFriendIdException("Передано два одинаковых id");
+            throw new UserIdEqualsFriendIdException("Передано два одинаковых id при удалении друга");
         }
         User friend = userStorage.getUserById(friendId);
         if (!userStorage.getUserById(userId).checkFriends(friendId)) {
-            throw new UserNotFoundException("У пользователя нет такого друга");
+            throw new UserNotFoundException("У пользователя id:" + userId + " нет друга id:" + friendId);
         }
         userStorage.getUserById(userId).deleteFriend(friendId);
     }
@@ -74,7 +72,7 @@ public class UserService {
 
     public List<User> getCommonFriends(Integer userId, Integer otherId) {
         if (userId.equals(otherId)) {
-            throw new UserIdEqualsFriendIdException("Передано два одинаковых id");
+            throw new UserIdEqualsFriendIdException("Передано два одинаковых id при получении общих друзей");
         }
         return userStorage.getCommonFriends(userId, otherId);
     }

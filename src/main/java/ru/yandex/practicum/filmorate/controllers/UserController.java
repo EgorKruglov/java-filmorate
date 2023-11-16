@@ -38,8 +38,7 @@ public class UserController {
             bindingResult.getFieldErrors().forEach(error ->
                     errors.append(error.getDefaultMessage()).append("\n")
             );
-            log.info("Ошибка валидации " + errors + " ", new ValidationException(errors.toString()));
-            throw new ValidationException(errors.toString());
+            throw new ValidationException("Ошибка валидации пользователя: " + errors);
         }
         User resultUser = userService.addUser(user);
         log.info("Пользователь добавлен id:" + user.getId());
@@ -53,8 +52,7 @@ public class UserController {
             bindingResult.getFieldErrors().forEach(error ->
                     errors.append(error.getDefaultMessage()).append("\n")
             );
-            log.info("Ошибка валидации " + errors + " ", new ValidationException(errors.toString()));
-            throw new ValidationException(errors.toString());
+            throw new ValidationException("Ошибка валидации пользователя: " + errors);
         }
         User resultUser = userService.updateUser(user);
         log.info("Данные пользователя обновлены id:" + user.getId());

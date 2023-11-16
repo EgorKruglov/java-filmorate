@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.classes;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.extraExceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.extraExceptions.UserNotFoundException;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Slf4j
 @Component
 public class InMemoryUserStorage implements ru.yandex.practicum.filmorate.storage.interfaces.UserStorage {
 
@@ -21,7 +19,6 @@ public class InMemoryUserStorage implements ru.yandex.practicum.filmorate.storag
     @Override
     public User addUser(User user) {
         if (users.containsKey(user.getId())) {
-            log.warn("Пользователь с id " + user.getId() + " уже существует");
             throw new UserAlreadyExistException("Пользователь с id " + user.getId() + " уже существует");
         }
         users.put(user.getId(), user);
@@ -43,7 +40,6 @@ public class InMemoryUserStorage implements ru.yandex.practicum.filmorate.storag
     @Override
     public User getUserById(Integer userId) {
         if (!users.containsKey(userId)) {
-            log.warn("Пользователь с id " + userId + " не найден");
             throw new UserNotFoundException("Пользователь c id " + userId + " не найден");
         }
         return users.get(userId);
