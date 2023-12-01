@@ -7,4 +7,8 @@ public class IdGeneratorUsers {
     public static int generate() {
         return  id++;
     }
+
+    public static int getId() {
+        return id;
+    }
 }

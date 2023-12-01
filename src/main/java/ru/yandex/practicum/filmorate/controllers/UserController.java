@@ -1,82 +1,103 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.database.UserStorage;
 import ru.yandex.practicum.filmorate.extraExceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.util.IdGeneratorUsers;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
+    private final UserService userService;
 
-    private final UserStorage users = new UserStorage();
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping
-    public ResponseEntity<?> addUser(@Valid  @RequestBody User user, BindingResult bindingResult) {
+    public User addUser(@Valid @RequestBody User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder errors = new StringBuilder();
             bindingResult.getFieldErrors().forEach(error ->
                     errors.append(error.getDefaultMessage()).append("\n")
             );
-            log.info("Ошибка валидации " + errors + " ", new ValidationException(errors.toString()));
-            return ResponseEntity.badRequest().body(Map.of("errors", errors.toString()));
+            throw new ValidationException("Ошибка валидации пользователя: " + errors);
         }
-
-        if (user.getName() == null) { // Если нет имени, использовать логин
-            user.setName(user.getLogin());
-        }
-
-        user.setId(IdGeneratorUsers.generate());
-
-        if (!users.addUser(user)) {
-            log.warn("Не удалось добавить пользователя id:" + user.getId());
-            return ResponseEntity.badRequest().body(Map.of("errors", "Не удалось добавить пользователя"));
-        }
-
+        User resultUser = userService.addUser(user);
         log.info("Пользователь добавлен id:" + user.getId());
-        return ResponseEntity.ok(user);
+        return resultUser;
     }
 
     @PutMapping
-    public ResponseEntity<?> updateUser(@Valid @RequestBody User user, BindingResult bindingResult) {
+    public User updateUser(@Valid @RequestBody User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder errors = new StringBuilder();
             bindingResult.getFieldErrors().forEach(error ->
                     errors.append(error.getDefaultMessage()).append("\n")
             );
-            log.info("Ошибка валидации " + errors + " ", new ValidationException(errors.toString()));
-            return ResponseEntity.badRequest().body(Map.of("errors", errors.toString()));
+            throw new ValidationException("Ошибка валидации пользователя: " + errors);
         }
-
-        if (user.getName() == null) { // Если нет имени, использовать логин
-            user.setName(user.getLogin());
-        }
-
-        if (!users.updateUser(user)) {
-            log.warn("Не удалось обновить данные пользователя id:" + user.getId());
-            return ResponseEntity.status(404).body(Map.of("errors", "Не удалось обновить данные пользователя"));
-        }
-
+        User resultUser = userService.updateUser(user);
         log.info("Данные пользователя обновлены id:" + user.getId());
-        return ResponseEntity.ok(user);
+        return resultUser;
     }
 
     @GetMapping
-    public ResponseEntity<?> getUsers() {
+    public Collection<User> getUsers() {
+        Collection<User> users = userService.getUsers().values();
         log.info("Отправлен список всех пользователей");
-        return ResponseEntity.ok(users.getUsers().values());
+        return users;
+    }
+
+    @GetMapping("/{userId}")
+    public User getUser(@PathVariable Integer userId) {
+        User user = userService.getUserById(userId);
+        log.info("Отправлена информация о пользователе id:" + userId);
+        return user;
+    }
+
+    @PutMapping("/{userId}/friends/{friendId}")
+    public Map<String, String> addFriend(@PathVariable Integer userId, @PathVariable Integer friendId) {
+        userService.addFriend(userId, friendId);
+        log.info("Пользователи id:" + userId + " и id:" + friendId + " взаимно добавлены в друзья");
+        return Map.of("message", "Пользователи id:" + userId + " и id:" + friendId + " добавлены в друзья");
+    }
+
+    @DeleteMapping("/{userId}/friends/{friendId}")
+    public Map<String, String> deleteFriend(@PathVariable Integer userId, @PathVariable Integer friendId) {
+        userService.deleteFriend(userId, friendId);
+        log.info("Пользователи id:" + userId + " и id:" + friendId + " взаимно удалены из друзей");
+        return Map.of("message", "Пользователи id:" + userId + " и id:" + friendId + " взаимно удалены из друзей");
+    }
+
+    @GetMapping("/{userId}/friends")
+    public List<User> getUserFriends(@PathVariable Integer userId) {
+        List<User> friends = userService.getUserFriends(userId);
+        log.info("Отправлен список друзей пользователя id:" + userId);
+        return friends;
+    }
+
+    @GetMapping("/{userId}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable Integer userId, @PathVariable Integer otherId) {
+        List<User> commonFriends = userService.getCommonFriends(userId, otherId);
+        log.info("Отправлен список общих друзей пользователей id:" + userId + " и id:" + otherId);
+        return commonFriends;
     }
 }
