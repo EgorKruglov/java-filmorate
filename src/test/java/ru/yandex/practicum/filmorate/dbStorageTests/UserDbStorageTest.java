@@ -118,9 +118,9 @@ public class UserDbStorageTest {
         userStorage.addFriend(addedUser1.getId(), addedUser3.getId());
 
         List<User> friends = userStorage.getUsersFriends(addedUser1.getId());
-        assertThat(friends).
-                contains(addedUser2).
-                contains(addedUser3);
+        assertThat(friends)
+                .contains(addedUser2)
+                .contains(addedUser3);
     }
 
     @Test
