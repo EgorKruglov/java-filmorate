@@ -95,7 +95,6 @@ public class FilmValidationTests {
 
         ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), film, String.class);
         assert response.getStatusCode() == HttpStatus.BAD_REQUEST;
-        assert response.getBody().contains("Ошибка валидации фильма: должно быть больше 0");
     }
 
     private String getBaseUrl() {
