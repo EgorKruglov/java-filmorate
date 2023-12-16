@@ -217,7 +217,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void fillFilmMpaNames(Film film) {
-        if (film.getMpa() != null ) {  // Заполнить имя жанра
+        if (film.getMpa() != null) {  // Заполнить имя жанра
             if (film.getMpa().getName() == null) {
                 String sqlQuery = "SELECT *\n" +
                         "FROM mpa\n" +
