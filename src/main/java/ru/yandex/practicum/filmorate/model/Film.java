@@ -2,44 +2,73 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validators.movieReleaseDateValidator.MovieReleaseDate;
-import ru.yandex.practicum.filmorate.validators.nonNegativeDurationValidator.PositiveDuration;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @Data
-public class Film implements Comparable<Film> {
+public class Film {
 
-    private final Integer id;
+    public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa, Set<Genre> genres) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.mpa = mpa;
+        this.genres = genres;
+    }
+
+    public Film(String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa, Set<Genre> genres) {
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.mpa = mpa;
+        this.genres = genres;
+    }
+
+    public Film(String name, String description, LocalDate releaseDate, Integer duration, Mpa mpa) {
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.mpa = mpa;
+    }
+
+    public Film() {
+    }
+
+    private Integer id;
 
     @NotBlank(message = "Название фильма не может быть пустым")
-    private final String name;
+    private String name;
 
     @Size(max = 200, message = "Описание должно быть меньше 200 символов")
-    private final String description;
+    private String description;
 
     @MovieReleaseDate
-    private final LocalDate releaseDate;
+    private LocalDate releaseDate;
 
-    @PositiveDuration(message = "Продолжительность фильма должна быть положительным числом")
-    private final Duration duration;
+    @Positive
+    private Integer duration;
 
-    private final Set<Integer> usersIdsWhoLiked = new HashSet<>();
+    private Mpa mpa;
 
-    public void addLike(Integer userId) {
-        usersIdsWhoLiked.add(userId);
-    }
+    private Set<Genre> genres;
 
-    public void deleteLike(Integer userId) {
-        usersIdsWhoLiked.remove(userId);
-    }
-
-    @Override
-    public int compareTo(Film f) {
-        return this.getUsersIdsWhoLiked().size() - f.getUsersIdsWhoLiked().size();
+    public Map<String,Object> toMap() {
+        Map<String,Object> filmMap = new HashMap<>();
+        filmMap.put("name", name);
+        filmMap.put("description", description);
+        filmMap.put("release_date", releaseDate);
+        filmMap.put("duration", duration);
+        filmMap.put("mpa_id", mpa.getId());
+        return  filmMap;
     }
 }

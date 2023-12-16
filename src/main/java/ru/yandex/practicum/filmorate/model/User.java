@@ -7,11 +7,29 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 public class User {
+
+    public User() {
+    }
+
+    public User(Integer id, String email, String login, String name, LocalDate birthday) {
+        this.id = id;
+        this.email = email;
+        this.login = login;
+        this.name = name;
+        this.birthday = birthday;
+    }
+
+    public User(String email, String login, String name, LocalDate birthday) {
+        this.email = email;
+        this.login = login;
+        this.name = name;
+        this.birthday = birthday;
+    }
 
     private Integer id;
 
@@ -28,21 +46,12 @@ public class User {
     @Past(message = "День рождения не может быть в будущем")
     private LocalDate birthday;
 
-    private Set<Integer> friendsIds = new HashSet<>();
-
-    public void addFriend(User user) {
-        friendsIds.add(user.getId());
-    }
-
-    public void deleteFriend(Integer friendId) {
-        friendsIds.remove(friendId);
-    }
-
-    public Boolean checkFriends(Integer friendId) {
-        return friendsIds.contains(friendId);
-    }
-
-    public Set<Integer> getFriends() {
-        return friendsIds;
+    public Map<String,Object> toMap() {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("email", email);
+        userMap.put("login", login);
+        userMap.put("name", name);
+        userMap.put("birthday", birthday);
+        return userMap;
     }
 }

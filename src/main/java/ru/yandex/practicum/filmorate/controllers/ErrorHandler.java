@@ -13,6 +13,8 @@ import ru.yandex.practicum.filmorate.extraExceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.extraExceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
+import java.sql.SQLException;
+
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
@@ -55,6 +57,13 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleUserIdEqualsFriendIdException(final UserIdEqualsFriendIdException e) {
+        log.debug(e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleSQLException(final SQLException e) {
         log.debug(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
