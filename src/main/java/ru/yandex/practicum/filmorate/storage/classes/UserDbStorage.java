@@ -119,8 +119,9 @@ public class UserDbStorage  implements UserStorage {
             return;
         }
 
-        String sqlQuery = "INSERT INTO friendship(user_id1, user_id2)\n" +  // Добавить неподтверждённую дружбу
+        String sqlQuery = "INSERT INTO friendship(user_id1, user_id2)\n" +
                 "VALUES (?, ?)";
+
         try {
             jdbcTemplate.update(sqlQuery, userId, friendId);
         } catch (DataAccessException e) {
