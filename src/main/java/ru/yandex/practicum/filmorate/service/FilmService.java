@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @Qualifier("filmDbStorage")
 public class FilmService {
@@ -21,14 +23,17 @@ public class FilmService {
     }
 
     public Film addFilm(Film film) {
+        log.info("Добавление фильма: {}", film);
         return filmStorage.addFilm(film);
     }
 
     public Film updateFilm(Film film) {
+        log.info("Обновление фильма: {}", film);
         return filmStorage.updateFilm(film);
     }
 
     public List<Film> getFilms() {
+        log.info("Получение списка фильмов");
         return filmStorage.getFilms();
     }
 
@@ -36,6 +41,7 @@ public class FilmService {
         if (filmId < 0) {
             throw new FilmNotFoundException("Id фильма должен быть неотрицательным");
         }
+        log.info("Получение фильма по Id: {}", filmId);
         return filmStorage.getFilmById(filmId);
     }
 
@@ -43,6 +49,7 @@ public class FilmService {
         if (filmId < 0 || userId < 0) {
             throw new FilmNotFoundException("Id должен быть неотрицательным");
         }
+        log.info("Добавление лайка для фильма с Id {} от пользователя с Id {}", filmId, userId);
         filmStorage.addLike(filmId, userId);
     }
 
@@ -50,10 +57,12 @@ public class FilmService {
         if (filmId < 0 || userId < 0) {
             throw new FilmNotFoundException("Id должен быть неотрицательным");
         }
+        log.info("Удаление лайка для фильма с Id {} от пользователя с Id {}", filmId, userId);
         filmStorage.deleteLike(filmId, userId);
     }
 
     public List<Film> getTopFilms(int count) {
+        log.info("Получение топ {} фильмов", count);
         return filmStorage.getTopFilms(count);
     }
 }

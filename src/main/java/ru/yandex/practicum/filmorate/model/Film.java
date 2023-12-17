@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.validators.movieReleaseDateValidator.MovieReleaseDate;
 
 import javax.validation.constraints.NotBlank;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+@NoArgsConstructor
 @Data
 public class Film {
 
@@ -39,9 +41,6 @@ public class Film {
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.mpa = mpa;
-    }
-
-    public Film() {
     }
 
     private Integer id;

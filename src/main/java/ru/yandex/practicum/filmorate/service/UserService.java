@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @Qualifier("userDbStorage")
 public class UserService {
@@ -25,6 +27,7 @@ public class UserService {
         if (user.getName().isBlank()) {  // Если нет имени, использовать логин
             user.setName(user.getLogin());
         }
+        log.info("Добавлен новый пользователь: {}", user);
         return userStorage.addUser(user);
     }
 
@@ -32,14 +35,17 @@ public class UserService {
         if (user.getName() == null) {  // Если нет имени, использовать логин
             user.setName(user.getLogin());
         }
+        log.info("Обновлен пользователь: {}", user);
         return userStorage.updateUser(user);
     }
 
     public List<User> getUsers() {
+        log.info("Получен список всех пользователей");
         return userStorage.getUsers();
     }
 
     public User getUserById(Integer userId) {
+        log.info("Получен пользователь по ID: {}", userId);
         return userStorage.getUserById(userId);
     }
 
@@ -50,6 +56,7 @@ public class UserService {
         if (userId < 0 || friendId < 0) {
             throw new UserNotFoundException("Id пользователя должен быть неотрицательным");
         }
+        log.info("Пользователь {} добавил в друзья пользователя {}", userId, friendId);
         userStorage.addFriend(userId, friendId);
     }
 
@@ -60,10 +67,12 @@ public class UserService {
         if (userId < 0 || friendId < 0) {
             throw new UserNotFoundException("Id пользователя должен быть неотрицательным");
         }
+        log.info("Пользователь {} удалил из друзей пользователя {}", userId, friendId);
         userStorage.deleteFriend(userId, friendId);
     }
 
     public List<User> getUserFriends(Integer userId) {
+        log.info("Получен список друзей пользователя по ID: {}", userId);
         return userStorage.getUsersFriends(userId);
     }
 
@@ -74,6 +83,7 @@ public class UserService {
         if (userId < 0 || otherId < 0) {
             throw new UserNotFoundException("Id пользователя должен быть неотрицательным");
         }
+        log.info("Получен список общих друзей для пользователей {} и {}", userId, otherId);
         return userStorage.getCommonFriends(userId, otherId);
     }
 }
