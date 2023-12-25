@@ -88,7 +88,7 @@ public class UserValidationTests {
     public void addUserWithoutName() {
         User user = new User();
         user.setName("");
-        user.setEmail("valid@example.com");
+        user.setEmail("valid2@example.com");
         user.setLogin("valid_login");
         user.setBirthday(LocalDate.of(1990, 1, 1));
 

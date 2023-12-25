@@ -16,7 +16,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -60,8 +59,8 @@ public class UserController {
     }
 
     @GetMapping
-    public Collection<User> getUsers() {
-        Collection<User> users = userService.getUsers().values();
+    public List<User> getUsers() {
+        List<User> users = userService.getUsers();
         log.info("Отправлен список всех пользователей");
         return users;
     }
@@ -76,8 +75,8 @@ public class UserController {
     @PutMapping("/{userId}/friends/{friendId}")
     public Map<String, String> addFriend(@PathVariable Integer userId, @PathVariable Integer friendId) {
         userService.addFriend(userId, friendId);
-        log.info("Пользователи id:" + userId + " и id:" + friendId + " взаимно добавлены в друзья");
-        return Map.of("message", "Пользователи id:" + userId + " и id:" + friendId + " добавлены в друзья");
+        log.info("Пользователи id:" + userId + " добавил в друзья пользователя id:" + friendId);
+        return Map.of("message", "Пользователи id:" + userId + " добавил в друзья пользователя id:" + friendId);
     }
 
     @DeleteMapping("/{userId}/friends/{friendId}")

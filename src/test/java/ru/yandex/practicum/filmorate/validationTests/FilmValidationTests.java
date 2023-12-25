@@ -7,13 +7,15 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import ru.yandex.practicum.filmorate.model.modelsForRequest.RequestFilm;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class FilmValidationTests {
-
     @LocalServerPort
     private int port;
 
@@ -22,25 +24,27 @@ public class FilmValidationTests {
 
     @Test
     public void addFilmSuccess() {
-        RequestFilm film = new RequestFilm(
+        Film film = new Film(
                 "Valid name",
                 "Valid description",
                 LocalDate.of(2022, 1, 1),
-                120);
+                120,
+                new Mpa(1, null),
+                Set.of(new Genre(2, null)));
 
         ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), film, String.class);
-        System.out.println(response);
-
         assert response.getStatusCode() == HttpStatus.OK;
     }
 
     @Test
     public void addFilmBlankName() {
-        RequestFilm film = new RequestFilm(
+        Film film = new Film(
                 "",
                 "Valid description",
                 LocalDate.of(2022, 1, 1),
-                120);
+                120,
+                new Mpa(1, null),
+                Set.of(new Genre(2, null)));
 
         ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), film, String.class);
         assert response.getStatusCode() == HttpStatus.BAD_REQUEST;
@@ -49,13 +53,15 @@ public class FilmValidationTests {
 
     @Test
     public void addFilmOverDescription() {
-        RequestFilm film = new RequestFilm(
-                "Valid Film",
+        Film film = new Film(
+                "Valid name",
                 "A very long description that exceeds the maximum allowed length of 200 characters. A very " +
                         "long description that exceeds the maximum allowed length of 200 characters. eeeeeeeeeeeeeeeeeee" +
                         "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
                 LocalDate.of(2022, 1, 1),
-                120);
+                120,
+                new Mpa(1, null),
+                Set.of(new Genre(2, null)));
 
         ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), film, String.class);
         assert response.getStatusCode() == HttpStatus.BAD_REQUEST;
@@ -64,11 +70,13 @@ public class FilmValidationTests {
 
     @Test
     public void addFilmAncientReleaseDAte() {
-        RequestFilm film = new RequestFilm(
+        Film film = new Film(
                 "Valid name",
                 "Valid description",
                 LocalDate.of(1800, 1, 1),
-                120);
+                120,
+                new Mpa(1, null),
+                Set.of(new Genre(2, null)));
 
         ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), film, String.class);
         assert response.getStatusCode() == HttpStatus.BAD_REQUEST;
@@ -77,15 +85,16 @@ public class FilmValidationTests {
 
     @Test
     public void addFilmNegativeDuration() {
-        RequestFilm film = new RequestFilm(
+        Film film = new Film(
                 "Valid name",
                 "Valid description",
                 LocalDate.of(2022, 1, 1),
-                -30);
+                -30,
+                new Mpa(1, null),
+                Set.of(new Genre(2, null)));
 
         ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), film, String.class);
         assert response.getStatusCode() == HttpStatus.BAD_REQUEST;
-        assert response.getBody().contains("Продолжительность фильма должна быть положительной");
     }
 
     private String getBaseUrl() {

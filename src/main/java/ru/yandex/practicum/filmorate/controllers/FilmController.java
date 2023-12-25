@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.extraExceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.modelsForRequest.RequestFilm;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
@@ -32,7 +32,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public RequestFilm addFilm(@Valid @RequestBody RequestFilm requestFilm, BindingResult bindingResult) {
+    public Film addFilm(@Valid @RequestBody Film requestFilm, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder errors = new StringBuilder();
             bindingResult.getFieldErrors().forEach(error ->
@@ -40,13 +40,13 @@ public class FilmController {
             );
             throw new ValidationException("Ошибка валидации фильма: " + errors);
         }
-        RequestFilm film = filmService.addFilm(requestFilm);
+        Film film = filmService.addFilm(requestFilm);
         log.info("Фильм добавлен id: " + film.getId());
         return film;
     }
 
     @PutMapping
-    public RequestFilm updateFilm(@Valid @RequestBody RequestFilm requestFilm, BindingResult bindingResult) {
+    public Film updateFilm(@Valid @RequestBody Film requestFilm, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder errors = new StringBuilder();
             bindingResult.getFieldErrors().forEach(error ->
@@ -54,20 +54,20 @@ public class FilmController {
             );
             throw new ValidationException("Ошибка валидации фильма: " + errors);
         }
-        RequestFilm film = filmService.updateFilm(requestFilm);
+        Film film = filmService.updateFilm(requestFilm);
         log.info("Данные фильма обновлены id:" + film.getId());
         return film;
     }
 
     @GetMapping
-    public List<RequestFilm> getFilms() {
+    public List<Film> getFilms() {
         log.info("Отправлен список всех фильмов");
         return filmService.getFilms();
     }
 
     @GetMapping("/{filmId}")
-    public RequestFilm getFilm(@PathVariable Integer filmId) {
-        RequestFilm film = filmService.getFilmById(filmId);
+    public Film getFilm(@PathVariable Integer filmId) {
+        Film film = filmService.getFilmById(filmId);
         log.info("Отправлена информация о фильме id:" + filmId);
         return film;
     }
@@ -87,8 +87,8 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<RequestFilm> getTopFilms(@RequestParam(defaultValue = "10") int count) {
-        List<RequestFilm> topFilms = filmService.getTopFilms(count);
+    public List<Film> getTopFilms(@RequestParam(defaultValue = "10") int count) {
+        List<Film> topFilms = filmService.getTopFilms(count);
         log.info("Отправлено " + topFilms.size() + " лучших фильмов по лайкам");
         return topFilms;
     }
