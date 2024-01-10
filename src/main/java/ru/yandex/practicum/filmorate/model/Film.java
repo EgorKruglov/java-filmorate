@@ -43,6 +43,7 @@ public class Film {
         this.mpa = mpa;
     }
 
+    @Positive
     private Integer id;
 
     @NotBlank(message = "Название фильма не может быть пустым")

@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,12 +21,10 @@ import java.util.List;
 @Component
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final UserStorage userStorage;
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, UserDbStorage userStorage) {
         this.jdbcTemplate = jdbcTemplate;
-        this.userStorage = userStorage;
     }
 
     @Override
@@ -142,8 +139,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void addLike(Integer filmId, Integer userId) {
-        userStorage.getUserById(userId);
-        getFilmById(filmId);
         try {
             String sqlQuery = "INSERT INTO film_likes(user_id, film_id)\n" +
                     "VALUES (?, ?)";
@@ -155,8 +150,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void deleteLike(Integer filmId, Integer userId) {
-        userStorage.getUserById(userId);
-        getFilmById(filmId);
         try {
             String sqlQuery = "DELETE\n" +
                     "FROM film_likes\n" +
@@ -165,11 +158,9 @@ public class FilmDbStorage implements FilmStorage {
                     "LIMIT 1";
             jdbcTemplate.update(sqlQuery, userId, filmId);
         } catch (DataAccessException e) {
-            e.printStackTrace();
             throw new SQLErrorTransaction("Не удалось удалить лайк с фильма id:" + filmId);
         }
     }
-
 
     @Override
     public List<Film> getTopFilms(int count) {
@@ -193,7 +184,6 @@ public class FilmDbStorage implements FilmStorage {
             }
             return films;
         } catch (DataAccessException e) {
-            e.printStackTrace();
             throw new SQLErrorTransaction("Не удалось отправить список фильмов");
         }
     }
