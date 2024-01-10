@@ -44,19 +44,16 @@ public class ReviewDbStorage implements ReviewStorage {
         getReviewById(review.getReviewId());  // Проверка наличия в бд
         String sqlQuery = "UPDATE reviews\n" +
                 "SET content = ?,\n" +
-                "    is_positive = ?,\n" +
-                "    user_id = ?,\n" +
-                "    film_id = ?\n" +
+                "    is_positive = ?\n" +
                 "WHERE review_id = ?";
         try {
             jdbcTemplate.update(sqlQuery,
                     review.getContent(),
                     review.getIsPositive(),
-                    review.getUserId(),
-                    review.getFilmId(),
                     review.getReviewId());
-            return review;
+            return getReviewById(review.getReviewId());
         } catch (DataAccessException e) {
+            e.printStackTrace();
             throw new SQLErrorTransaction("Не удалось обновить отзыв");
         }
     }
