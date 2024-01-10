@@ -80,7 +80,6 @@ public class UserDbStorage  implements UserStorage {
         try {
             return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, userId);
         } catch (DataAccessException e) {
-            e.printStackTrace();
             throw new UserNotFoundException("Пользователь c id " + userId + " не найден");
         }
     }
@@ -161,13 +160,11 @@ public class UserDbStorage  implements UserStorage {
             throw new SQLErrorTransaction("Не удалось удалить данные дружбы пользователя id:" + userId +
                     " с пользователем id:" + friendId);
         }
-
     }
 
     @Override
     public List<User> getUsersFriends(Integer userId) {
         getUserById(userId);  // Проверка пользователя в бд
-
         String sqlQuery = "SELECT u.user_id,\n" +
                 "u.name,\n" +
                 "u.login,\n" +
@@ -175,7 +172,6 @@ public class UserDbStorage  implements UserStorage {
                 "u.email " +
                 "FROM friendship AS f JOIN users AS u ON f.user_id2 = u.user_id\n" +
                 "WHERE f.user_id1 = ?";
-
         try {
             return jdbcTemplate.query(sqlQuery, this::mapRowToUser, userId);
         } catch (DataAccessException e) {
@@ -185,9 +181,6 @@ public class UserDbStorage  implements UserStorage {
 
     @Override
     public List<User> getCommonFriends(Integer userId, Integer otherId) {
-        getUserById(userId);  // Проверка пользователей в бд
-        getUserById(otherId);
-
         String sqlQuery = "SELECT DISTINCT u.user_id,\n" +
                 "u.name,\n" +
                 "u.login,\n" +
