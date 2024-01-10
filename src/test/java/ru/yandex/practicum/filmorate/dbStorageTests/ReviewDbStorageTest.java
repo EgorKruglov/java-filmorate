@@ -49,9 +49,9 @@ public class ReviewDbStorageTest {
         Review addedReview = reviewStorage.addReview(review);
 
         assertThat(addedReview)
-                .isNotNull().
-                usingRecursiveComparison().
-                isEqualTo(review);
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(review);
     }
 
     @Test
