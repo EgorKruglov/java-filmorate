@@ -3,15 +3,9 @@ package ru.yandex.practicum.filmorate.controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.extraExceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -98,5 +92,10 @@ public class UserController {
         List<User> commonFriends = userService.getCommonFriends(userId, otherId);
         log.info("Отправлен список общих друзей пользователей id:" + userId + " и id:" + otherId);
         return commonFriends;
+    }
+
+    @GetMapping("/{userId}/feed")
+    public List<Event> getUserFeed(@PathVariable Integer userId) {
+        return userService.getUserEvent(userId);
     }
 }
