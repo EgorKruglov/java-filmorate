@@ -73,7 +73,7 @@ public class UserService {
     }
 
     public List<User> getUserFriends(Integer userId) {
-        log.info("Получение список друзей пользователя по ID: {}", userId);
+        log.info("Получение списка друзей пользователя по ID: {}", userId);
         return userStorage.getUsersFriends(userId);
     }
 
