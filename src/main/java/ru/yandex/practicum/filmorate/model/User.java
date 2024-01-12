@@ -7,6 +7,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class User {
         this.birthday = birthday;
     }
 
+    @Positive
     private Integer id;
 
     @NotBlank(message = "Email не может быть пустым")
