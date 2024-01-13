@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.classes;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,7 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, UserDbStorage userStorage) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -171,7 +172,7 @@ public class FilmDbStorage implements FilmStorage {
                 "f.duration, " +
                 "f.mpa_id, " +
                 "COUNT(fl.user_id) AS likes_count " +
-                "FROM films f " + // Исправлено на правильное имя таблицы
+                "FROM films f " +
                 "LEFT JOIN film_likes fl ON fl.film_id = f.film_id " +
                 "GROUP BY f.film_id " +
                 "ORDER BY likes_count DESC NULLS LAST, f.release_date DESC " +
@@ -185,6 +186,59 @@ public class FilmDbStorage implements FilmStorage {
             return films;
         } catch (DataAccessException e) {
             throw new SQLErrorTransaction("Не удалось отправить список фильмов");
+        }
+    }
+
+    @Override
+    public List<Film> getFilmRecommendations(Integer userId) {
+        /*Запрос для получения id другого пользователя, у которого больше всего лайков на те фильмы, что у пользователя
+        userId. И у которого просто больше всех лайков, чтобы было больше рекомендаций.*/
+        String sqlQuery = "SELECT user_id\n" +
+                "FROM (\n" +
+                "    SELECT fl.user_id, COUNT(fl.film_id) AS like_count\n" +
+                "    FROM film_likes fl\n" +
+                "    WHERE fl.film_id IN (\n" +
+                "        SELECT film_id\n" +
+                "        FROM film_likes\n" +
+                "        WHERE user_id = ?\n" +
+                "    )\n" +
+                "    AND fl.user_id <> ?\n" +
+                "    GROUP BY fl.user_id\n" +
+                "    ORDER BY like_count DESC\n" +
+                "    LIMIT 1\n" +
+                ") AS user_likes;";
+
+        /*Запрос для получения фильмов найденного пользователя, исключая фильмы с лайками пользователя userId.*/
+        String sqlQuery2 = "SELECT f.film_id, " +
+                "f.name, " +
+                "f.description, " +
+                "f.release_date, " +
+                "f.duration, " +
+                "f.mpa_id, " +
+                "FROM films f\n" +
+                "JOIN film_likes fl ON f.film_id = fl.film_id AND fl.user_id = ?\n" +
+                "LEFT JOIN film_likes fl2 ON f.film_id = fl2.film_id AND fl2.user_id = ?\n" +
+                "WHERE fl2.user_id IS NULL;";
+
+        Integer commonUserId;
+
+        try {
+            commonUserId = jdbcTemplate.queryForObject(sqlQuery, Integer.class, userId, userId);
+        } catch (EmptyResultDataAccessException e) {  // Если не нашлось такого пользователя (нет лайков/слишком уникальные лайки)
+            return List.of();
+        } catch (DataAccessException e) {
+            throw new SQLErrorTransaction("Не удалось отправить список рекомендованных фильмов");
+        }
+
+        try {
+            List<Film> films = jdbcTemplate.query(sqlQuery2, this::mapRowToFilm, commonUserId, userId);
+            for (Film film : films) {
+                fillFilmMpaNames(film);
+                fillFilmGenres(film);
+            }
+            return films;
+        } catch (DataAccessException e) {
+            throw new SQLErrorTransaction("Не удалось отправить список рекомендованных фильмов");
         }
     }
 

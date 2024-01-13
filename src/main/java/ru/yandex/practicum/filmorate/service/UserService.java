@@ -82,6 +82,9 @@ public class UserService {
     }
 
     public List<User> getUserFriends(Integer userId) {
+        if (userId < 0) {
+            throw new UserNotFoundException("Id пользователя должен быть неотрицательным");
+        }
         log.info("Получение списка друзей пользователя по ID: {}", userId);
         return userStorage.getUsersFriends(userId);
     }

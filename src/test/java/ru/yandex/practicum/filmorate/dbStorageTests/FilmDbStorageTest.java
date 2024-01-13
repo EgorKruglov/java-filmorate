@@ -13,7 +13,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.classes.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.classes.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,10 +25,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FilmDbStorageTest {
     private final JdbcTemplate jdbcTemplate;
     private FilmStorage filmStorage;
+    private UserDbStorage userStorage;
 
     @BeforeEach
     public void updateDb() {
-        filmStorage = new FilmDbStorage(jdbcTemplate, new UserDbStorage(jdbcTemplate));
+        userStorage = new UserDbStorage(jdbcTemplate);
+        filmStorage = new FilmDbStorage(jdbcTemplate);
     }
 
     @Test
@@ -103,7 +104,6 @@ public class FilmDbStorageTest {
         Film addedFilm2 = filmStorage.addFilm(film2);
         Film addedFilm3 = filmStorage.addFilm(film3);
 
-        UserStorage userStorage = new UserDbStorage(jdbcTemplate);
         User user = userStorage.addUser(new User("user@email.ru", "vanya123", "Ivan Petrov", LocalDate.of(1990, 1, 1)));
 
         filmStorage.addLike(addedFilm1.getId(), user.getId());
@@ -127,7 +127,6 @@ public class FilmDbStorageTest {
         Film addedFilm2 = filmStorage.addFilm(film2);
         Film addedFilm3 = filmStorage.addFilm(film3);
 
-        UserStorage userStorage = new UserDbStorage(jdbcTemplate);
         User user = userStorage.addUser(new User("user@email.ru", "vanya123", "Ivan Petrov", LocalDate.of(1990, 1, 1)));
 
         filmStorage.addLike(addedFilm1.getId(), user.getId());
@@ -155,7 +154,6 @@ public class FilmDbStorageTest {
         Film addedFilm1 = filmStorage.addFilm(film1);
         Film addedFilm2 = filmStorage.addFilm(film2);
 
-        UserStorage userStorage = new UserDbStorage(jdbcTemplate);
         User user = userStorage.addUser(new User("user@email.ru", "vanya123", "Ivan Petrov", LocalDate.of(1990, 1, 1)));
 
         filmStorage.addLike(addedFilm2.getId(), user.getId());
