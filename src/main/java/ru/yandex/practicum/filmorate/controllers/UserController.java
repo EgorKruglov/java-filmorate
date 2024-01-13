@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.extraExceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
@@ -24,10 +26,12 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final FilmService filmService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, FilmService filmService) {
         this.userService = userService;
+        this.filmService = filmService;
     }
 
     @PostMapping
@@ -98,5 +102,12 @@ public class UserController {
         List<User> commonFriends = userService.getCommonFriends(userId, otherId);
         log.info("Отправлен список общих друзей пользователей id:" + userId + " и id:" + otherId);
         return commonFriends;
+    }
+
+    @GetMapping("/{userId}/recommendations")
+    public List<Film> getFilmRecommendations(@PathVariable Integer userId) {
+        List<Film> recommendations = filmService.getFilmRecommendations(userId);
+        log.info("Отправлен список рекомендованных фильмов пользователю id:" + userId);
+        return recommendations;
     }
 }

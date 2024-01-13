@@ -36,7 +36,7 @@ public class ReviewDbStorageTest {
     public void updateDb() {
         reviewStorage = new ReviewDbStorage(jdbcTemplate);
         userStorage = new UserDbStorage(jdbcTemplate);
-        filmStorage = new FilmDbStorage(jdbcTemplate, userStorage);
+        filmStorage = new FilmDbStorage(jdbcTemplate);
         user = userStorage.addUser(new User("user@email.ru", "vanya123", "Ivan Petrov", LocalDate.of(1990,
                 1, 1)));
         film = filmStorage.addFilm(new Film("Film One", "description1", LocalDate.of(2010, 5, 10),
