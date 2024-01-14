@@ -49,9 +49,10 @@ public class ReviewService {
             throw new UserNotFoundException("Id пользователя должен быть неотрицательным");
         }
         log.info("Обновление отзыва на фильм: {}", review);
-        Event event = new Event(review.getUserId(), EventType.REVIEW, EventOperation.UPDATE, review.getReviewId());
+        Review reviewFromDb = reviewStorage.updateReview(review);
+        Event event = new Event(reviewFromDb.getUserId(), EventType.REVIEW, EventOperation.UPDATE, reviewFromDb.getReviewId());
         eventService.add(event);
-        return reviewStorage.updateReview(review);
+        return reviewFromDb;
     }
 
     public void deleteReview(Integer reviewId) {
