@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.extraExceptions.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.extraExceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.extraExceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Event;
@@ -10,6 +11,7 @@ import ru.yandex.practicum.filmorate.model.EventOperation;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.classes.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 import java.util.List;
@@ -18,11 +20,13 @@ import java.util.List;
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final DirectorStorage directorStorage;
     private final EventService eventService;
 
     @Autowired
-    public FilmService(FilmDbStorage filmStorage, EventService eventService) {
+    public FilmService(FilmDbStorage filmStorage, EventService eventService, DirectorStorage directorStorage) {
         this.filmStorage = filmStorage;
+        this.directorStorage = directorStorage;
         this.eventService = eventService;
     }
 
@@ -80,5 +84,13 @@ public class FilmService {
         }
         log.info("Получение списка рекомендованных фильмов для пользователя с id:{}", userId);
         return filmStorage.getFilmRecommendations(userId);
+    }
+
+    public List<Film> getSortedDirectorFilms(Long directorId, String sortBy) {
+        if (directorStorage.checkDirectorExistInDb(directorId)) {
+            return filmStorage.getSortedDirectorFilms(directorId, sortBy);
+        } else {
+            throw new DirectorNotFoundException("Режиссёр не найден");
+        }
     }
 }
