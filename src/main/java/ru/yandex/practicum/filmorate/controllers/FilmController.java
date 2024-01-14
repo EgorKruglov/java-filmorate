@@ -92,4 +92,11 @@ public class FilmController {
         log.info("Отправлено " + topFilms.size() + " лучших фильмов по лайкам");
         return topFilms;
     }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getSortedDirectorFilms(@PathVariable Long directorId,
+                                             @RequestParam(defaultValue = "year") String sortBy) {
+        log.info("Получен GET-запрос /director/{}/?sortBy={}", directorId, sortBy);
+        return filmService.getSortedDirectorFilms(directorId, sortBy);
+    }
 }

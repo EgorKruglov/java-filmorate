@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.extraExceptions.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.extraExceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.classes.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 import java.util.List;
@@ -16,10 +18,12 @@ import java.util.List;
 @Qualifier("filmDbStorage")
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final DirectorStorage directorStorage;
 
     @Autowired
-    public FilmService(FilmDbStorage filmStorage) {
+    public FilmService(FilmDbStorage filmStorage, DirectorStorage directorStorage) {
         this.filmStorage = filmStorage;
+        this.directorStorage = directorStorage;
     }
 
     public Film addFilm(Film film) {
@@ -64,5 +68,13 @@ public class FilmService {
     public List<Film> getTopFilms(int count) {
         log.info("Получение топ {} фильмов", count);
         return filmStorage.getTopFilms(count);
+    }
+
+    public List<Film> getSortedDirectorFilms(Long directorId, String sortBy) {
+        if (directorStorage.checkDirectorExistInDb(directorId)) {
+            return filmStorage.getSortedDirectorFilms(directorId, sortBy);
+        } else {
+            throw new DirectorNotFoundException("Режиссёр не найден");
+        }
     }
 }
