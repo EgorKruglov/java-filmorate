@@ -25,40 +25,37 @@ public class DirectorController {
 
     @PostMapping
     public Director createDirector(@RequestBody Director director) {
-        log.info("Пришел POST-запрос /directors с телом: {}", director);
+        log.info("Получен запрос на создание режиссера {}", director);
         Director createdDirector = directorService.createDirector(director);
-        log.info("Отправлен ответ на POST-запрос /directors с телом: {}", createdDirector);
+        log.info("Создан режессер {}", createdDirector);
         return createdDirector;
     }
 
     @PutMapping
     public Director updateDirector(@RequestBody Director director) {
-        log.info("Пришел PUT-запрос /directors с телом: {}", director);
+        log.info("Пришел запрос на обновление информации о режиссёре {}", director);
         Director updatedDirector = directorService.updateDirector(director);
-        log.info("Отправлен ответ на PUT-запрос /directors с телом: {}", director);
+        log.info("Информация о режиссёре {} обновлена", director);
         return updatedDirector;
     }
 
     @GetMapping
     public List<Director> getAllDirector() {
-        log.debug("Пришел запрос GET /directors");
         List<Director> foundedDirectors = directorService.getDirectorsList();
-        log.debug("Отправлен овтет на GET запрос /directors с телом: {}", foundedDirectors);
+        log.debug("Отправлен список режессёров {}", foundedDirectors);
         return foundedDirectors;
     }
 
     @GetMapping("/{directorId}")
     public Director getDirector(@PathVariable Long directorId) {
-        log.info("Получен GET-запрос /directors/{}", directorId);
         Director foundedDirector = directorService.getDirectorById(directorId);
-        log.info("Отправлен ответ на GET-запрос /directors/{} с телом: {}", directorId, foundedDirector);
+        log.info("Отправлена информация о режессёре с Id {}: {}", directorId, foundedDirector);
         return foundedDirector;
     }
 
     @DeleteMapping("/{directorId}")
     public String deleteDirector(@PathVariable Long directorId) {
-        log.info("Получен DELETE-запрос /directors/{}", directorId);
-        log.info("Отправлен ответ на DELETE-запрос /directors/{}", directorId);
+        log.info("Удален директор с Id {}", directorId);
         return directorService.deleteDirector(directorId);
     }
 }
