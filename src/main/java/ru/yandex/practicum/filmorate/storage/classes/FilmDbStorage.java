@@ -362,4 +362,53 @@ public class FilmDbStorage implements FilmStorage {
             throw new SQLErrorTransaction("Не удалось создать объект жанра фильма на основе бд");
         }
     }
+
+    @Override
+    public List<Film> searchFilmsByDirector(String director) {
+        String sqlQuery = "SELECT f.*, m.name " +
+                "FROM films f " +
+                "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN director_films df ON f.film_id = df.film_id " +
+                "LEFT JOIN director d ON df.director_id = d.id " +
+                "WHERE lower(d.name) LIKE lower(?) " +
+                "ORDER BY (SELECT COUNT(*) FROM film_likes fl WHERE fl.film_id = f.film_id) DESC";
+        List<Film> foundedFilms = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, "%" + director + "%");
+        for (Film film : foundedFilms) {
+            fillFilmMpaNames(film);
+            fillFilmGenres(film);
+        }
+        return foundedFilms;
+    }
+
+    @Override
+    public List<Film> searchFilmsByTitle(String title) {
+        String sqlQuery = "SELECT f.*, m.name " +
+                "FROM films f " +
+                "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "WHERE lower(f.name) LIKE lower(?) " +
+                "ORDER BY (SELECT COUNT(*) FROM film_likes fl WHERE fl.film_id = f.film_id) DESC";
+        List<Film> foundedFilms = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, "%" + title + "%");
+        for (Film film : foundedFilms) {
+            fillFilmMpaNames(film);
+            fillFilmGenres(film);
+        }
+        return foundedFilms;
+    }
+
+    @Override
+    public List<Film> searchFilmsByDirectorAndTitle(String query) {
+        String sqlQuery = "SELECT f.*, m.name " +
+                "FROM films f " +
+                "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN director_films df ON f.film_id = df.film_id " +
+                "LEFT JOIN director d ON df.director_id = d.id " +
+                "WHERE lower(d.name) LIKE lower(?) OR lower(f.name) LIKE lower(?) " +
+                "ORDER BY (SELECT COUNT(*) FROM film_likes fl WHERE fl.film_id = f.film_id) DESC";
+        List<Film> foundedFilms = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, "%" + query + "%", "%" + query + "%");
+        for (Film film : foundedFilms) {
+            fillFilmMpaNames(film);
+            fillFilmGenres(film);
+        }
+        return foundedFilms;
+    }
 }
