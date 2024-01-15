@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-@Component("directorDaoImpl")
+@Component
 @AllArgsConstructor
 public class DirectorDbStorage implements DirectorStorage {
 

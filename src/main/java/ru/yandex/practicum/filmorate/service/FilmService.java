@@ -88,6 +88,7 @@ public class FilmService {
 
     public List<Film> getSortedDirectorFilms(Long directorId, String sortBy) {
         if (directorStorage.checkDirectorExistInDb(directorId)) {
+            log.info("Получен список фильмов {} снятых режиссером с Id {}", sortBy, directorId);
             return filmStorage.getSortedDirectorFilms(directorId, sortBy);
         } else {
             throw new DirectorNotFoundException("Режиссёр не найден");

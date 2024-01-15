@@ -96,7 +96,7 @@ public class FilmController {
     @GetMapping("/director/{directorId}")
     public List<Film> getSortedDirectorFilms(@PathVariable Long directorId,
                                              @RequestParam(defaultValue = "year") String sortBy) {
-        log.info("Получен GET-запрос /director/{}/?sortBy={}", directorId, sortBy);
+        log.info("Отправлен список фильмов " + sortBy + " снятых режиссером с Id" + directorId);
         return filmService.getSortedDirectorFilms(directorId, sortBy);
     }
 }

@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.extraExceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.extraExceptions.UserIdEqualsFriendIdException;
 import ru.yandex.practicum.filmorate.extraExceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.extraExceptions.ValidationException;
+import ru.yandex.practicum.filmorate.extraExceptions.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 import java.sql.SQLException;

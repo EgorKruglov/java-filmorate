@@ -55,7 +55,7 @@ public class DirectorService {
         if (!director.getName().isBlank() && !director.getName().equals(" ")) {
             log.info("Проверка режиссёра пройдена");
         } else {
-            throw new ValidationException("Ощибка в процессе валидации.");
+            throw new ValidationException("Ошибка в процессе валидации.");
         }
     }
 }
