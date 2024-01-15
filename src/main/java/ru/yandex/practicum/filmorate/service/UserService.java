@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.extraExceptions.UserIdEqualsFriendIdException;
 import ru.yandex.practicum.filmorate.extraExceptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.EventOperation;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.classes.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
@@ -15,10 +18,12 @@ import java.util.List;
 @Service
 public class UserService {
     private final UserStorage userStorage;
+    private final EventService eventService;
 
     @Autowired
-    public UserService(UserDbStorage userStorage) {
+    public UserService(UserDbStorage userStorage, EventService eventService) {
         this.userStorage = userStorage;
+        this.eventService = eventService;
     }
 
     public User addUser(User user) {
@@ -59,6 +64,8 @@ public class UserService {
         }
         log.info("Пользователь {} добавляет в друзья пользователя {}", userId, friendId);
         userStorage.addFriend(userId, friendId);
+        Event event = new Event(userId, EventType.FRIEND, EventOperation.ADD, friendId);
+        eventService.add(event);
     }
 
     public void deleteFriend(Integer userId, Integer friendId) {
@@ -70,6 +77,8 @@ public class UserService {
         }
         log.info("Пользователь {} удаляет из друзей пользователя {}", userId, friendId);
         userStorage.deleteFriend(userId, friendId);
+        Event event = new Event(userId, EventType.FRIEND, EventOperation.REMOVE, friendId);
+        eventService.add(event);
     }
 
     public List<User> getUserFriends(Integer userId) {
@@ -89,5 +98,11 @@ public class UserService {
         }
         log.info("Получение списка общих друзей пользователей {} и {}", userId, otherId);
         return userStorage.getCommonFriends(userId, otherId);
+    }
+
+    public List<Event> getUserEvent(Integer userId) {
+        log.info("Просмотр действий пользователя id:" + userId);
+        getUserById(userId);
+        return eventService.getUserEvent(userId);
     }
 }

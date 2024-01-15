@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.extraExceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.extraExceptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.EventOperation;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.classes.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
@@ -15,10 +18,12 @@ import java.util.List;
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final EventService eventService;
 
     @Autowired
-    public FilmService(FilmDbStorage filmStorage) {
+    public FilmService(FilmDbStorage filmStorage, EventService eventService) {
         this.filmStorage = filmStorage;
+        this.eventService = eventService;
     }
 
     public Film addFilm(Film film) {
@@ -50,6 +55,8 @@ public class FilmService {
         }
         log.info("Добавление лайка для фильма с Id {} от пользователя с Id {}", filmId, userId);
         filmStorage.addLike(filmId, userId);
+        Event event = new Event(userId, EventType.LIKE, EventOperation.ADD, filmId);
+        eventService.add(event);
     }
 
     public void deleteLike(Integer filmId, Integer userId) {
@@ -58,6 +65,8 @@ public class FilmService {
         }
         log.info("Удаление лайка для фильма с Id {} от пользователя с Id {}", filmId, userId);
         filmStorage.deleteLike(filmId, userId);
+        Event event = new Event(userId, EventType.LIKE, EventOperation.REMOVE, filmId);
+        eventService.add(event);
     }
 
     public List<Film> getTopFilms(int count) {
