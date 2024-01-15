@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.extraExceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -98,5 +99,11 @@ public class UserController {
         List<User> commonFriends = userService.getCommonFriends(userId, otherId);
         log.info("Отправлен список общих друзей пользователей id:" + userId + " и id:" + otherId);
         return commonFriends;
+    }
+
+    @GetMapping("/{userId}/feed")
+    public List<Event> getUserFeed(@PathVariable Integer userId) {
+        log.info("Отправлен список действий пользователя id:" + userId);
+        return userService.getUserEvent(userId);
     }
 }

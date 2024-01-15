@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.extraExceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.extraExceptions.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.extraExceptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.EventOperation;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.classes.ReviewDbStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.ReviewStorage;
@@ -16,10 +19,12 @@ import java.util.List;
 @Service
 public class ReviewService {
     private final ReviewStorage reviewStorage;
+    private final EventService eventService;
 
     @Autowired
-    public ReviewService(ReviewDbStorage reviewStorage) {
+    public ReviewService(ReviewDbStorage reviewStorage, EventService eventService) {
         this.reviewStorage = reviewStorage;
+        this.eventService = eventService;
     }
 
     public Review addReview(Review review) {
@@ -30,7 +35,10 @@ public class ReviewService {
             throw new UserNotFoundException("Id пользователя должен быть неотрицательным");
         }
         log.info("Добавление отзыва на фильм: {}", review);
-        return reviewStorage.addReview(review);
+        Review reviewFromDb = reviewStorage.addReview(review);
+        Event event = new Event(reviewFromDb.getUserId(), EventType.REVIEW, EventOperation.ADD, reviewFromDb.getReviewId());
+        eventService.add(event);
+        return reviewFromDb;
     }
 
     public Review updateReview(Review review) {
@@ -41,7 +49,10 @@ public class ReviewService {
             throw new UserNotFoundException("Id пользователя должен быть неотрицательным");
         }
         log.info("Обновление отзыва на фильм: {}", review);
-        return reviewStorage.updateReview(review);
+        Review reviewFromDb = reviewStorage.updateReview(review);
+        Event event = new Event(reviewFromDb.getUserId(), EventType.REVIEW, EventOperation.UPDATE, reviewFromDb.getReviewId());
+        eventService.add(event);
+        return reviewFromDb;
     }
 
     public void deleteReview(Integer reviewId) {
@@ -49,6 +60,9 @@ public class ReviewService {
             throw new ReviewNotFoundException("Id отзыва должен быть неотрицательным");
         }
         log.info("Удаление отзыва на фильм с id:" + reviewId);
+        Review reviewFromDb = reviewStorage.getReviewById(reviewId);
+        Event event = new Event(reviewFromDb.getUserId(), EventType.REVIEW, EventOperation.REMOVE, reviewId);
+        eventService.add(event);
         reviewStorage.deleteReview(reviewId);
     }
 
