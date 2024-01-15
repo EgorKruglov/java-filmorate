@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.extraExceptions.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.extraExceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.EventOperation;
 import ru.yandex.practicum.filmorate.model.EventType;
@@ -71,5 +72,13 @@ public class FilmService {
     public List<Film> getTopFilms(int count) {
         log.info("Получение топ {} фильмов", count);
         return filmStorage.getTopFilms(count);
+    }
+
+    public List<Film> getFilmRecommendations(Integer userId) {
+        if (userId < 0) {
+            throw new UserNotFoundException("Id пользователя должен быть неотрицательным");
+        }
+        log.info("Получение списка рекомендованных фильмов для пользователя с id:{}", userId);
+        return filmStorage.getFilmRecommendations(userId);
     }
 }
