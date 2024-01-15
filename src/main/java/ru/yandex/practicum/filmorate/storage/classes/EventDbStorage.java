@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.classes;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.extraExceptions.SQLErrorTransaction;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.EventOperation;
 import ru.yandex.practicum.filmorate.model.EventType;
@@ -24,14 +26,23 @@ public class EventDbStorage implements EventStorage {
     @Override
     public Event add(Event event) {
         String query = "INSERT INTO USER_EVENT (INSERT_DATE_TIME, USER_ID, EVENT_TYPE_ID, EVENT_OPERATION_ID, ENTITY_ID) " + " VALUES(? , ? , ? , ? , ?)";
-        jdbcTemplate.update(query, event.getTimestamp(), event.getUserId(), event.getEventType().getId(), event.getOperation().getId(), event.getEntityId());
+        try {
+            jdbcTemplate.update(query, event.getTimestamp(), event.getUserId(), event.getEventType().getId(), event.getOperation().getId(), event.getEntityId());
+        } catch (DataAccessException e) {
+            throw new SQLErrorTransaction("Не удалось добавить в ленту действие пользователя");
+        }
         return event;
     }
 
     @Override
     public List<Event> getUserEvent(Integer userId) {
         String query = "SELECT UE.EVENT_ID, UE.INSERT_DATE_TIME, UE.USER_ID,UE.ENTITY_ID, ET.NAME AS EVENT_TYPE_NAME, EO.NAME AS EVENT_OPERATION_NAME " + "FROM USER_EVENT AS UE LEFT JOIN EVENT_TYPE AS ET ON UE.EVENT_TYPE_ID = ET.EVENT_TYPE_ID " + "LEFT JOIN EVENT_OPERATION AS EO " + "ON UE.EVENT_OPERATION_ID = EO.EVENT_OPERATION_ID " + "WHERE UE.USER_ID=?";
-        return jdbcTemplate.query(query, this::makeEvent, userId);
+        try {
+            return jdbcTemplate.query(query, this::makeEvent, userId);
+        } catch (DataAccessException e) {
+            throw new SQLErrorTransaction("Не удалось получить список действий пользователя");
+        }
+
     }
 
     private Event makeEvent(ResultSet rs, int i) throws SQLException {
