@@ -117,4 +117,10 @@ public class UserController {
         log.info("Отправлен список рекомендованных фильмов пользователю id:" + userId);
         return recommendations;
     }
+
+    @GetMapping("/{userId}/feed")
+    public List<Event> getUserFeed(@PathVariable Integer userId) {
+        log.info("Отправлен список действий пользователя id:" + userId);
+        return userService.getUserEvent(userId);
+    }
 }
