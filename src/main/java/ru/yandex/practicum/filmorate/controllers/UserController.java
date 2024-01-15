@@ -105,6 +105,13 @@ public class UserController {
         return commonFriends;
     }
 
+    @GetMapping("/{userId}/recommendations")
+    public List<Film> getFilmRecommendations(@PathVariable Integer userId) {
+        List<Film> recommendations = filmService.getFilmRecommendations(userId);
+        log.info("Отправлен список рекомендованных фильмов пользователю id:" + userId);
+        return recommendations;
+    }
+
     @GetMapping("/{userId}/feed")
     public List<Event> getUserFeed(@PathVariable Integer userId) {
         log.info("Отправлен список действий пользователя id:" + userId);
