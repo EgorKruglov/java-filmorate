@@ -67,17 +67,15 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public List<Director> getDirectorByFilmId(Long filmId) {
-        {
-            // Получить режисера по ID фильма
-            String sqlQuery = "SELECT d.id, d.name " +
-                    "FROM director_films AS df " +
-                    "LEFT JOIN director AS d ON df.director_id=d.id " +
-                    "WHERE film_id = ?";
-            if (jdbcTemplate.queryForList(sqlQuery, filmId).isEmpty()) {
-                return List.of();
-            }
-            return jdbcTemplate.query(sqlQuery, this::mapRow, filmId);
+        // Получить режисера по ID фильма
+        String sqlQuery = "SELECT d.id, d.name " +
+                "FROM director_films AS df " +
+                "LEFT JOIN director AS d ON df.director_id=d.id " +
+                "WHERE film_id = ?";
+        if (jdbcTemplate.queryForList(sqlQuery, filmId).isEmpty()) {
+            return List.of();
         }
+        return jdbcTemplate.query(sqlQuery, this::mapRow, filmId);
     }
 
     @Override
@@ -103,11 +101,11 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public void deleteDirectorsFromFilm(Long filmId) {// Удалить данные о режисере по ID фильма
+    public void deleteDirectorsFromFilm(Long filmId) {
+        // Удалить данные о режисере по ID фильма
         String sqlQuery = "DELETE FROM director_films " +
                 "WHERE film_id = ?";
         jdbcTemplate.update(sqlQuery, String.valueOf(filmId));
-
     }
 
     @Override
