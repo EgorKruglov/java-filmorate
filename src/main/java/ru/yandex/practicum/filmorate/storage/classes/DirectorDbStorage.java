@@ -20,7 +20,8 @@ public class DirectorDbStorage implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Director createDirector(Director director) {// Создать режисера
+    public Director createDirector(Director director) {
+        // Создать режисера
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("director").usingGeneratedKeyColumns("id");
         director.setId(simpleJdbcInsert.executeAndReturnKey(Map.of("name", director.getName())).longValue());
