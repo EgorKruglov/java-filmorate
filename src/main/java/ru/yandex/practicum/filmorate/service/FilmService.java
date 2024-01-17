@@ -16,6 +16,10 @@ import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 import java.util.List;
+import java.util.Collection;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.ArrayList;
 
 @Slf4j
 @Service
@@ -111,5 +115,13 @@ public class FilmService {
     public void deleteFilm(Integer filmId) {
         log.info("Удаление фильма id = {}", filmId);
         filmStorage.deleteFilm(filmId);
+    }
+
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        Collection<Film> listOfUserFilms = filmStorage.getFilmsByUser(userId);
+        Collection<Film> listOfFriendFilms = filmStorage.getFilmsByUser(friendId);
+        Set<Film> commonList = new HashSet<>(listOfUserFilms);
+        commonList.retainAll(listOfFriendFilms);
+        return new ArrayList<>(commonList);
     }
 }
