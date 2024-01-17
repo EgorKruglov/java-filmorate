@@ -49,8 +49,8 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public List<Director> getDirectorsList() {
-        List<Director> directors;
         // Получить список режисеров
+        List<Director> directors;
         String sqlQuery = "SELECT * " +
                 "FROM director";
         directors = jdbcTemplate.query(sqlQuery, this::mapRow);
