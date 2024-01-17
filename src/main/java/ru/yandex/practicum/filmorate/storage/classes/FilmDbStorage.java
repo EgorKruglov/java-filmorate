@@ -432,4 +432,18 @@ public class FilmDbStorage implements FilmStorage {
         }
         return films;
     }
+
+    @Override
+    public Integer getLikesCount(Integer filmId) {
+        String sqlQuery = "SELECT COUNT(*)\n" +
+                "FROM FILMS F JOIN FILM_LIKES L ON F.FILM_ID = L.FILM_ID WHERE F.FILM_ID = ?;";
+        try {
+            Integer likesCount = jdbcTemplate.queryForObject(sqlQuery, Integer.class, filmId);
+            return likesCount;
+        } catch (EmptyResultDataAccessException e) {
+            return 0;
+        } catch (DataAccessException e) {
+            throw new SQLErrorTransaction("Не удалось посчитать количесво лайков");
+        }
+    }
 }

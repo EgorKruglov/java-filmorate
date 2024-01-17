@@ -19,6 +19,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -86,7 +87,7 @@ public class FilmController {
         return Map.of("message", "C фильма id:" + filmId + " удалён лайк пользователя id:" + userId);
     }
 
-    @GetMapping("/popular")
+    @GetMapping("/top_films")
     public List<Film> getTopFilms(@RequestParam(defaultValue = "10") int count) {
         List<Film> topFilms = filmService.getTopFilms(count);
         log.info("Отправлено " + topFilms.size() + " лучших фильмов по лайкам");
@@ -115,9 +116,17 @@ public class FilmController {
     }
 
     @GetMapping("/common")
-    public List<Film> getPopularFilms(@RequestParam Integer userId, @RequestParam Integer friendId) {
+    public List<Film> getCommonFilms(@RequestParam Integer userId, @RequestParam Integer friendId) {
         log.info("Получение общих фильмов для пользоветлей id: " + userId + " и id: " + friendId);
         return filmService.getCommonFilms(userId, friendId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilmsByGenreAndYear(@RequestParam(defaultValue = "10") Integer count,
+                                      @RequestParam Optional<Integer> genreId,
+                                      @RequestParam Optional<Integer> year) {
+        log.info("Получение топ популярных фильмов");
+        return filmService.getPopularFilms(count, genreId, year);
     }
 }
 

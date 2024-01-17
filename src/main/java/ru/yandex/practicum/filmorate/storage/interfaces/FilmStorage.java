@@ -34,4 +34,6 @@ public interface FilmStorage {
     void deleteFilm(Integer filmId);
 
     Collection<Film> getFilmsByUser(Integer id);
+
+    Integer getLikesCount(Integer filmId);
 }

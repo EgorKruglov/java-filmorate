@@ -12,14 +12,12 @@ import ru.yandex.practicum.filmorate.model.EventOperation;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.classes.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.classes.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
-import java.util.List;
-import java.util.Collection;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -27,12 +25,14 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final DirectorStorage directorStorage;
     private final EventService eventService;
+    private final GenreDbStorage genreDbStorage;
 
     @Autowired
-    public FilmService(FilmDbStorage filmStorage, EventService eventService, DirectorStorage directorStorage) {
+    public FilmService(FilmDbStorage filmStorage, EventService eventService, DirectorStorage directorStorage, GenreDbStorage genreDbStorage) {
         this.filmStorage = filmStorage;
         this.directorStorage = directorStorage;
         this.eventService = eventService;
+        this.genreDbStorage = genreDbStorage;
     }
 
     public Film addFilm(Film film) {
@@ -123,5 +123,51 @@ public class FilmService {
         Set<Film> commonList = new HashSet<>(listOfUserFilms);
         commonList.retainAll(listOfFriendFilms);
         return new ArrayList<>(commonList);
+    }
+
+    public List<Film> getPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year) {
+        Map<Film, Integer> filmsMap = new HashMap<>();
+        for (Film f: filmStorage.getFilms()) {
+            filmsMap.put(f, filmStorage.getLikesCount(f.getId()));
+        }
+        if (genreId.isEmpty() && year.isEmpty()) {
+            log.info("Запрос популярных фильмов с параметром - колличество {}.", count);
+            return getFilms().stream()
+                    .sorted(this::compare)
+                    .limit(count)
+                    .collect(Collectors.toList());
+        } else if (year.isEmpty()) {
+            log.info("Запрос популярных фильмов с параметрами: колличество {}, жанр  {}", count, genreId.get());
+            genreDbStorage.getGenreById(genreId.get());
+            return filmsMap.entrySet().stream()
+                    .sorted((Comparator.comparingInt(Map.Entry::getValue)))
+                    .filter(e-> e.getKey().getGenres().stream().anyMatch(g -> g.getId() == genreId.get()))
+                    .map(Map.Entry::getKey)
+                    .limit(count)
+                    .collect(Collectors.toList());
+        } else if (genreId.isEmpty()) {
+            log.info("Запрос популярных фильмов с параметрами: колличество {}, год  {}", count, year.get());
+            return filmsMap.entrySet().stream()
+                    .sorted((Comparator.comparingInt(Map.Entry::getValue)))
+                    .filter(e-> e.getKey().getReleaseDate().getYear() == year.get())
+                    .map(Map.Entry::getKey)
+                    .limit(count)
+                    .collect(Collectors.toList());
+        } else {
+            log.info("Запрос популярных фильмов с параметрами: колличество {}, жанр  {}, год  {}",
+                    count, genreId.get(), year.get());
+            genreDbStorage.getGenreById(genreId.get());
+            return filmsMap.entrySet().stream()
+                    .sorted((Comparator.comparingInt(Map.Entry::getValue)))
+                    .filter(e-> e.getKey().getGenres().stream().anyMatch(g -> g.getId() == genreId.get()))
+                    .filter(e-> e.getKey().getReleaseDate().getYear() == year.get())
+                    .map(Map.Entry::getKey)
+                    .limit(count)
+                    .collect(Collectors.toList());
+        }
+    }
+
+    private int compare(Film film, Film otherFilm) {
+        return Integer.compare(filmStorage.getLikesCount(otherFilm.getId()), filmStorage.getLikesCount(film.getId()));
     }
 }
