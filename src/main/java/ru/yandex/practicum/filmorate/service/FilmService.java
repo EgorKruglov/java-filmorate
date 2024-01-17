@@ -94,4 +94,9 @@ public class FilmService {
             throw new DirectorNotFoundException("Режиссёр не найден");
         }
     }
+
+    public void deleteFilm(Integer filmId) {
+        log.info("Удаление фильма id = {}", filmId);
+        filmStorage.deleteFilm(filmId);
+    }
 }

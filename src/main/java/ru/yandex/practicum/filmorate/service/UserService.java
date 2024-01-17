@@ -105,4 +105,9 @@ public class UserService {
         getUserById(userId);
         return eventService.getUserEvent(userId);
     }
+
+    public void deleteUser(Integer userId) {
+        log.info("Удаление фильма id = {}", userId);
+        userStorage.deleteUser(userId);
+    }
 }

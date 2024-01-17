@@ -23,4 +23,6 @@ public interface FilmStorage {
     public List<Film> getTopFilms(int count);
 
     List<Film> getFilmRecommendations(Integer userId);
+
+    void deleteFilm(Integer filmId);
 }

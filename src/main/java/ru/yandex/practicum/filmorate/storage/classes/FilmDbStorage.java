@@ -362,4 +362,11 @@ public class FilmDbStorage implements FilmStorage {
             throw new SQLErrorTransaction("Не удалось создать объект жанра фильма на основе бд");
         }
     }
+
+    @Override
+    public void deleteFilm(Integer filmId) {
+        getFilmById(filmId);
+        String sqlQuery = "DELETE FROM FILMS WHERE FILM_ID = ?;";
+        jdbcTemplate.update(sqlQuery, filmId);
+    }
 }

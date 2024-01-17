@@ -117,4 +117,10 @@ public class UserController {
         log.info("Отправлен список действий пользователя id:" + userId);
         return userService.getUserEvent(userId);
     }
+
+    @DeleteMapping(value = "/{userId}")
+    public void deleteUser(@PathVariable Integer userId) {
+        log.info("Удаление пользователя id:" + userId);
+        userService.deleteUser(userId);
+    }
 }

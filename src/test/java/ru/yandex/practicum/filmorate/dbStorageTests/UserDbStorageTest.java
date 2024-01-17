@@ -138,4 +138,25 @@ public class UserDbStorageTest {
         List<User> commonFriends = userStorage.getCommonFriends(addedUser1.getId(), addedUser2.getId());
         assertThat(commonFriends).containsExactly(addedUser3);
     }
+
+    @Test
+    public void testDeleteUserCorrectly() {
+        User user1 = new User("user1@email.ru", "user123", "User One", LocalDate.of(1990, 1, 1));
+        User user2 = new User("user2@email.ru", "user456", "User Two", LocalDate.of(1990, 1, 1));
+        User user3 = new User("user3@email.ru", "user789", "User Three", LocalDate.of(1990, 1, 1));
+        User addedUser1 = userStorage.addUser(user1);
+        User addedUser2 = userStorage.addUser(user2);
+        User addedUser3 = userStorage.addUser(user3);
+
+        userStorage.addFriend(addedUser1.getId(), addedUser3.getId());
+        userStorage.addFriend(addedUser2.getId(), addedUser3.getId());
+
+        List<User> commonFriends = userStorage.getCommonFriends(addedUser1.getId(), addedUser2.getId());
+        assertThat(commonFriends).containsExactly(addedUser3);
+
+        userStorage.deleteUser(addedUser3.getId());
+        assertThat(userStorage.getCommonFriends(addedUser1.getId(), addedUser2.getId())).hasSize(0);
+        assertThat(userStorage.getUsers()).hasSize(2);
+
+    }
 }

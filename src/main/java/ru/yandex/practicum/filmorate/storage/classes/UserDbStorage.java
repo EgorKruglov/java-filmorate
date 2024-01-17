@@ -243,4 +243,11 @@ public class UserDbStorage  implements UserStorage {
             throw new SQLErrorTransaction("Не удалось создать объект пользователя на основе базы данных");
         }
     }
+
+    @Override
+    public void deleteUser(Integer userId) {
+        getUserById(userId);
+        String sqlQuery = "DELETE FROM USERS WHERE USER_ID = ?;";
+        jdbcTemplate.update(sqlQuery, userId);
+    }
 }

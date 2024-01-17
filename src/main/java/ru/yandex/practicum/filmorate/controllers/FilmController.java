@@ -99,4 +99,11 @@ public class FilmController {
         log.info("Отправлен список фильмов " + sortBy + " снятых режиссером с Id" + directorId);
         return filmService.getSortedDirectorFilms(directorId, sortBy);
     }
+
+    @DeleteMapping(value = "/{filmId}")
+    public void deleteFilm(@PathVariable Integer filmId) {
+        log.info("Удаление фильма id:" + filmId);
+        filmService.deleteFilm(filmId);
+    }
 }
+

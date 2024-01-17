@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS genres (
 CREATE TABLE IF NOT EXISTS film_genres (
   film_id INT NOT NULL,
   genre_id INT NOT NULL,
-  CONSTRAINT fk_film_genres_films FOREIGN KEY (film_id) REFERENCES films (film_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT fk_film_genres_films FOREIGN KEY (film_id) REFERENCES films (film_id) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT fk_film_genres_genres FOREIGN KEY (genre_id) REFERENCES genres (genre_id) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
@@ -71,8 +71,8 @@ CREATE TABLE IF NOT EXISTS friendship (
   status VARCHAR(45) NOT NULL DEFAULT 'неподтверждённая',
   user_id1 INT NOT NULL,
   user_id2 INT NOT NULL,
-  CONSTRAINT fk_friends_users1 FOREIGN KEY (user_id1) REFERENCES users (user_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT fk_friends_users2 FOREIGN KEY (user_id2) REFERENCES users (user_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT fk_friends_users1 FOREIGN KEY (user_id1) REFERENCES users (user_id) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT fk_friends_users2 FOREIGN KEY (user_id2) REFERENCES users (user_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 -- -----------------------------------------------------
@@ -81,8 +81,8 @@ CREATE TABLE IF NOT EXISTS friendship (
 CREATE TABLE IF NOT EXISTS film_likes (
   user_id INT NOT NULL,
   film_id INT NOT NULL,
-  CONSTRAINT fk_film_likes_users FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT fk_film_likes_films FOREIGN KEY (film_id) REFERENCES films (film_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT fk_film_likes_users FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT fk_film_likes_films FOREIGN KEY (film_id) REFERENCES films (film_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 -- -----------------------------------------------------
 -- Table director
@@ -109,8 +109,8 @@ CREATE TABLE IF NOT EXISTS reviews (
   is_positive BOOLEAN NOT NULL,
   user_id INT NOT NULL,
   film_id INT NOT NULL,
-  CONSTRAINT fk_reviews_users FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT fk_reviews_films FOREIGN KEY (film_id) REFERENCES films (film_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT fk_reviews_users FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT fk_reviews_films FOREIGN KEY (film_id) REFERENCES films (film_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 -- -----------------------------------------------------
