@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.extraExceptions.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.extraExceptions.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.extraExceptions.UnknownSearchingParameterException;
 import ru.yandex.practicum.filmorate.extraExceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.EventOperation;
@@ -92,6 +93,18 @@ public class FilmService {
             return filmStorage.getSortedDirectorFilms(directorId, sortBy);
         } else {
             throw new DirectorNotFoundException("Режиссёр не найден");
+        }
+    }
+
+    public List<Film> searchFilms(String query, String by) {
+        if (by.equals("director")) {
+            return filmStorage.searchFilmsByDirector(query);
+        } else if (by.equals("title")) {
+            return filmStorage.searchFilmsByTitle(query);
+        } else if (by.equals("title,director") || by.equals("director,title")) {
+            return filmStorage.searchFilmsByDirectorAndTitle(query);
+        } else {
+            throw new UnknownSearchingParameterException("Неверный пареметр поиска:" + by);
         }
     }
 }
