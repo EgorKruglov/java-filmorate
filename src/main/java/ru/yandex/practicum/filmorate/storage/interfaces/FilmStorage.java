@@ -22,6 +22,12 @@ public interface FilmStorage {
 
     public List<Film> getTopFilms(int count);
 
+    List<Film> searchFilmsByDirector(String director);
+
+    List<Film> searchFilmsByTitle(String title);
+
+    List<Film> searchFilmsByDirectorAndTitle(String query);
+
     List<Film> getFilmRecommendations(Integer userId);
 
     void deleteFilm(Integer filmId);

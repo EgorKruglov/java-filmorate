@@ -76,7 +76,7 @@ public class FilmController {
     public Map<String, String> addLike(@PathVariable Integer filmId, @PathVariable Integer userId) {
         filmService.addLike(filmId, userId);
         log.info("На фильм id:" + filmId + " поставлен лайк пользователем id:" + userId);
-        return Map.of("message", "На фильм id:" + filmId + " поставлен лайк пользователем id:" + userId);
+        return Map.of("message", "На фильм id:" + filmId + " поставлен лайк пользователем id: " + userId);
     }
 
     @DeleteMapping("/{filmId}/like/{userId}")
@@ -100,6 +100,14 @@ public class FilmController {
         return filmService.getSortedDirectorFilms(directorId, sortBy);
     }
 
+    @GetMapping("/search")
+    public List<Film> searchFilms(@RequestParam String query, @RequestParam String by) {
+        log.info("Получен GET-запрос /films/search?query={}&by={}", query, by);
+        List<Film> filmsList = filmService.searchFilms(query, by);
+        log.info("Отправлен ответ на GET-запрос /films/search?query={}&by={} c телом {}", query, by, filmsList);
+        return filmsList;
+    }
+ 
     @DeleteMapping(value = "/{filmId}")
     public void deleteFilm(@PathVariable Integer filmId) {
         log.info("Удаление фильма id:" + filmId);

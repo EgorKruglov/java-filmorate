@@ -6,7 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.classes.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.classes.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.classes.UserDbStorage;
@@ -29,9 +32,9 @@ public class FilmDbStorageTest {
 
     @BeforeEach
     public void updateDb() {
+        filmStorage = new FilmDbStorage(jdbcTemplate, new UserDbStorage(jdbcTemplate), new DirectorDbStorage(jdbcTemplate));
         userStorage = new UserDbStorage(jdbcTemplate);
         directorStorage = new DirectorDbStorage(jdbcTemplate);
-        filmStorage = new FilmDbStorage(jdbcTemplate, directorStorage);
     }
 
     @Test
