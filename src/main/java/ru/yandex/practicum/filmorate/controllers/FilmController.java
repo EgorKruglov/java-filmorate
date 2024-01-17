@@ -76,7 +76,7 @@ public class FilmController {
     public Map<String, String> addLike(@PathVariable Integer filmId, @PathVariable Integer userId) {
         filmService.addLike(filmId, userId);
         log.info("На фильм id:" + filmId + " поставлен лайк пользователем id:" + userId);
-        return Map.of("message", "На фильм id:" + filmId + " поставлен лайк пользователем id:" + userId);
+        return Map.of("message", "На фильм id:" + filmId + " поставлен лайк пользователем id: " + userId);
     }
 
     @DeleteMapping("/{filmId}/like/{userId}")
