@@ -16,11 +16,7 @@ import ru.yandex.practicum.filmorate.storage.classes.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
-import java.util.List;
-import java.util.Collection;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -145,7 +141,7 @@ public class FilmService {
             genreDbStorage.getGenreById(genreId.get());
             return filmsMap.entrySet().stream()
                     .sorted((Comparator.comparingInt(Map.Entry::getValue)))
-                    .filter(e-> e.getKey().getGenres().stream().anyMatch(g -> g.getId() == genreId.get()))
+                    .filter(e -> e.getKey().getGenres().stream().anyMatch(g -> g.getId() == genreId.get()))
                     .map(Map.Entry::getKey)
                     .limit(count)
                     .collect(Collectors.toList());
@@ -153,7 +149,7 @@ public class FilmService {
             log.info("Запрос популярных фильмов с параметрами: колличество {}, год  {}", count, year.get());
             return filmsMap.entrySet().stream()
                     .sorted((Comparator.comparingInt(Map.Entry::getValue)))
-                    .filter(e-> e.getKey().getReleaseDate().getYear() == year.get())
+                    .filter(e -> e.getKey().getReleaseDate().getYear() == year.get())
                     .map(Map.Entry::getKey)
                     .limit(count)
                     .collect(Collectors.toList());
@@ -163,8 +159,8 @@ public class FilmService {
             genreDbStorage.getGenreById(genreId.get());
             return filmsMap.entrySet().stream()
                     .sorted((Comparator.comparingInt(Map.Entry::getValue)))
-                    .filter(e-> e.getKey().getGenres().stream().anyMatch(g -> g.getId() == genreId.get()))
-                    .filter(e-> e.getKey().getReleaseDate().getYear() == year.get())
+                    .filter(e -> e.getKey().getGenres().stream().anyMatch(g -> g.getId() == genreId.get()))
+                    .filter(e -> e.getKey().getReleaseDate().getYear() == year.get())
                     .map(Map.Entry::getKey)
                     .limit(count)
                     .collect(Collectors.toList());
