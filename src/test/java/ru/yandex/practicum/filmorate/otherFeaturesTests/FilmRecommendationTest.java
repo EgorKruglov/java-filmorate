@@ -39,12 +39,10 @@ public class FilmRecommendationTest {
         userStorage = new UserDbStorage(jdbcTemplate);
         directorStorage = new DirectorDbStorage(jdbcTemplate);
         filmStorage = new FilmDbStorage(jdbcTemplate, userStorage, directorStorage);
-        user1 = userStorage.addUser(new User("user1@email.ru", "vanya123", "Ivan Petrov", LocalDate.of(1990,
-                1, 1)));
+        user1 = userStorage.addUser(new User("user1@email.ru", "vanya123", "Ivan Petrov", LocalDate.of(1990, 1, 1)));
         film1 = filmStorage.addFilm(new Film(1, "Film One", "description1", LocalDate.of(2010, 5, 10),
                 90, new Mpa(1, null), Set.of(new Genre(1, null), new Genre(2, null)), List.of()));
-        user2 = userStorage.addUser(new User("user2@email.ru", "Petya321", "Petya Ivanov", LocalDate.of(1991,
-                1, 1)));
+        user2 = userStorage.addUser(new User("user2@email.ru", "Petya321", "Petya Ivanov", LocalDate.of(1991, 1, 1)));
         film2 = filmStorage.addFilm(new Film(2, "Film Two", "description2", LocalDate.of(2011, 5, 10),
                 100, new Mpa(2, null), Set.of(new Genre(3, null)), List.of()));
     }
