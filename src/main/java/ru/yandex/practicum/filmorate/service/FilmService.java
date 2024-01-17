@@ -13,8 +13,13 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.classes.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.MpaStorage;
 
 import java.util.List;
+import java.util.Collection;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.ArrayList;
 
 @Slf4j
 @Service
@@ -22,12 +27,14 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final DirectorStorage directorStorage;
     private final EventService eventService;
+    private final MpaStorage mpaStorage;
 
     @Autowired
-    public FilmService(FilmDbStorage filmStorage, EventService eventService, DirectorStorage directorStorage) {
+    public FilmService(FilmDbStorage filmStorage, EventService eventService, DirectorStorage directorStorage, MpaStorage mpaStorage) {
         this.filmStorage = filmStorage;
         this.directorStorage = directorStorage;
         this.eventService = eventService;
+        this.mpaStorage = mpaStorage;
     }
 
     public Film addFilm(Film film) {
@@ -98,5 +105,13 @@ public class FilmService {
     public void deleteFilm(Integer filmId) {
         log.info("Удаление фильма id = {}", filmId);
         filmStorage.deleteFilm(filmId);
+    }
+
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        Collection<Film> listOfUserFilms = filmStorage.getFilmsByUser(userId);
+        Collection<Film> listOfFriendFilms = filmStorage.getFilmsByUser(friendId);
+        Set<Film> commonList = new HashSet<>(listOfUserFilms);
+        commonList.retainAll(listOfFriendFilms);
+        return new ArrayList<>(commonList);
     }
 }

@@ -105,5 +105,11 @@ public class FilmController {
         log.info("Удаление фильма id:" + filmId);
         filmService.deleteFilm(filmId);
     }
+
+    @GetMapping("/common")
+    public List<Film> getPopularFilms(@RequestParam Integer userId, @RequestParam Integer friendId) {
+        log.info("Получение общих фильмов для пользоветлей id: " + userId + " и id: " + friendId);
+        return filmService.getCommonFilms(userId, friendId);
+    }
 }
 

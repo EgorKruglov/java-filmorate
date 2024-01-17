@@ -16,8 +16,10 @@ import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /* Класс для сохранения данных о фильмах приложения внутри базы данных H2 */
 @Component
@@ -368,5 +370,17 @@ public class FilmDbStorage implements FilmStorage {
         getFilmById(filmId);
         String sqlQuery = "DELETE FROM FILMS WHERE FILM_ID = ?;";
         jdbcTemplate.update(sqlQuery, filmId);
+    }
+
+    @Override
+    public Collection<Film> getFilmsByUser(Integer id) {
+        Collection<Film> filmsFromDB =  jdbcTemplate
+                .query("SELECT * FROM films WHERE film_id IN (SELECT film_id FROM film_likes WHERE user_id = ?)",
+                        this::mapRowToFilm, id);
+        Set<Film> films = new HashSet<>();
+        for (Film f: filmsFromDB) {
+            films.add(getFilmById(f.getId()));
+        }
+        return films;
     }
 }
