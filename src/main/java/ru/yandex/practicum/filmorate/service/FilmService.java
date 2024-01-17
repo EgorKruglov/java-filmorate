@@ -107,4 +107,9 @@ public class FilmService {
             throw new UnknownSearchingParameterException("Неверный пареметр поиска:" + by);
         }
     }
+
+    public void deleteFilm(Integer filmId) {
+        log.info("Удаление фильма id = {}", filmId);
+        filmStorage.deleteFilm(filmId);
+    }
 }

@@ -107,4 +107,11 @@ public class FilmController {
         log.info("Отправлен ответ на GET-запрос /films/search?query={}&by={} c телом {}", query, by, filmsList);
         return filmsList;
     }
+
+    @DeleteMapping(value = "/{filmId}")
+    public void deleteFilm(@PathVariable Integer filmId) {
+        log.info("Удаление фильма id:" + filmId);
+        filmService.deleteFilm(filmId);
+    }
 }
+
