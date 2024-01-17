@@ -11,9 +11,11 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.classes.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.classes.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.classes.ReviewDbStorage;
 import ru.yandex.practicum.filmorate.storage.classes.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.ReviewStorage;
 
 import java.time.LocalDate;
@@ -29,6 +31,7 @@ public class ReviewDbStorageTest {
     private ReviewStorage reviewStorage;
     private UserDbStorage userStorage;
     private FilmDbStorage filmStorage;
+    private DirectorStorage directorStorage;
     User user;
     Film film;
 
@@ -36,7 +39,8 @@ public class ReviewDbStorageTest {
     public void updateDb() {
         reviewStorage = new ReviewDbStorage(jdbcTemplate);
         userStorage = new UserDbStorage(jdbcTemplate);
-        filmStorage = new FilmDbStorage(jdbcTemplate);
+        directorStorage = new DirectorDbStorage(jdbcTemplate);
+        filmStorage = new FilmDbStorage(jdbcTemplate, directorStorage);
         user = userStorage.addUser(new User("user@email.ru", "vanya123", "Ivan Petrov", LocalDate.of(1990,
                 1, 1)));
         film = filmStorage.addFilm(new Film("Film One", "description1", LocalDate.of(2010, 5, 10),
