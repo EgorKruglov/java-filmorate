@@ -164,8 +164,7 @@ public class FilmDbStorage implements FilmStorage {
             String sqlQuery = "DELETE\n" +
                     "FROM film_likes\n" +
                     "WHERE user_id = ?\n" +
-                    "  AND film_id = ?\n" +
-                    "LIMIT 1";
+                    "  AND film_id = ?;";
             jdbcTemplate.update(sqlQuery, userId, filmId);
         } catch (DataAccessException e) {
             throw new SQLErrorTransaction("Не удалось удалить лайк с фильма id:" + filmId);

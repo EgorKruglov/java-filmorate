@@ -144,6 +144,7 @@ public class FilmService {
                     .filter(e -> e.getKey().getGenres().stream().anyMatch(g -> g.getId() == genreId.get()))
                     .map(Map.Entry::getKey)
                     .limit(count)
+                    .sorted((Comparator.comparing(Film::getId)))
                     .collect(Collectors.toList());
         } else if (genreId.isEmpty()) {
             log.info("Запрос популярных фильмов с параметрами: колличество {}, год  {}", count, year.get());
@@ -152,6 +153,7 @@ public class FilmService {
                     .filter(e -> e.getKey().getReleaseDate().getYear() == year.get())
                     .map(Map.Entry::getKey)
                     .limit(count)
+                    .sorted((Comparator.comparing(Film::getId)))
                     .collect(Collectors.toList());
         } else {
             log.info("Запрос популярных фильмов с параметрами: колличество {}, жанр  {}, год  {}",
@@ -163,6 +165,7 @@ public class FilmService {
                     .filter(e -> e.getKey().getReleaseDate().getYear() == year.get())
                     .map(Map.Entry::getKey)
                     .limit(count)
+                    .sorted((Comparator.comparing(Film::getId)))
                     .collect(Collectors.toList());
         }
     }
