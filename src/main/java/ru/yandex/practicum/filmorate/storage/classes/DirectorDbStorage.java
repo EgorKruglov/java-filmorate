@@ -28,8 +28,8 @@ public class DirectorDbStorage implements DirectorStorage {
                 .withTableName("director")
                 .usingGeneratedKeyColumns("id");
         try {
-        director.setId(simpleJdbcInsert.executeAndReturnKey(Map.of("name", director.getName())).longValue());
-        return director;
+            director.setId(simpleJdbcInsert.executeAndReturnKey(Map.of("name", director.getName())).longValue());
+            return director;
         } catch (DataAccessException e) {
             throw new SQLErrorTransaction("Не удалось добавить режиссёра");
         }
@@ -42,10 +42,10 @@ public class DirectorDbStorage implements DirectorStorage {
                 "SET  name = ? " +
                 "WHERE id = ?;";
         try {
-        jdbcTemplate.update(sqlQuery,
-                director.getName(),
-                director.getId());
-        return director;
+            jdbcTemplate.update(sqlQuery,
+                    director.getName(),
+                    director.getId());
+            return director;
         } catch (DataAccessException e) {
             throw new SQLErrorTransaction("Не удалось обновить режиссера");
         }
@@ -57,7 +57,7 @@ public class DirectorDbStorage implements DirectorStorage {
         String sqlQuery = "DELETE FROM director " +
                 "WHERE id=?";
         try {
-        jdbcTemplate.update(sqlQuery, String.valueOf(directorId));
+            jdbcTemplate.update(sqlQuery, String.valueOf(directorId));
         } catch (DataAccessException e) {
             throw new SQLErrorTransaction("Не удалось удалить данные режиссера id:" + directorId);
         }
@@ -70,7 +70,7 @@ public class DirectorDbStorage implements DirectorStorage {
         String sqlQuery = "SELECT * " +
                 "FROM director";
         try {
-        return jdbcTemplate.query(sqlQuery, this::mapRow);
+            return jdbcTemplate.query(sqlQuery, this::mapRow);
         } catch (DataAccessException e) {
             throw new SQLErrorTransaction("Не удалось отправить список режиссёров");
         }
@@ -83,7 +83,7 @@ public class DirectorDbStorage implements DirectorStorage {
                 "FROM director " +
                 "WHERE id = ?";
         try {
-        return jdbcTemplate.queryForObject(sqlQuery, this::mapRow, directorId);
+            return jdbcTemplate.queryForObject(sqlQuery, this::mapRow, directorId);
         } catch (DataAccessException e) {
             throw new DirectorNotFoundException("Режиссёр c id " + directorId + " не найден");
         }
@@ -97,10 +97,10 @@ public class DirectorDbStorage implements DirectorStorage {
                 "LEFT JOIN director AS d ON df.director_id=d.id " +
                 "WHERE film_id = ?";
         try {
-        if (jdbcTemplate.queryForList(sqlQuery, filmId).isEmpty()) {
-            return List.of();
-        }
-        return jdbcTemplate.query(sqlQuery, this::mapRow, filmId);
+            if (jdbcTemplate.queryForList(sqlQuery, filmId).isEmpty()) {
+                return List.of();
+            }
+            return jdbcTemplate.query(sqlQuery, this::mapRow, filmId);
         } catch (DataAccessException e) {
             e.printStackTrace();
             throw new SQLErrorTransaction("Не удалось получить список режиссёров по фильму с id:" + filmId);
@@ -115,8 +115,8 @@ public class DirectorDbStorage implements DirectorStorage {
                 "WHERE id = ?";
         try {
             return !jdbcTemplate.query(sqlQuery, this::mapRow, id).isEmpty();
-        } catch(DataAccessException e) {
-                throw new SQLErrorTransaction("Не удалось найти режиссёра с id:" + id);
+        } catch (DataAccessException e) {
+            throw new SQLErrorTransaction("Не удалось найти режиссёра с id:" + id);
         }
     }
 
@@ -124,8 +124,8 @@ public class DirectorDbStorage implements DirectorStorage {
     public void addDirectorToFilm(Film film) {
         // Добавить режиссёра к фильму
         String sqlQuery = "INSERT into director_films (film_id, director_id) values(?, ?);";
-            if (film.getDirectors() != null) {
-                try {
+        if (film.getDirectors() != null) {
+            try {
                 if (!film.getDirectors().isEmpty()) {
                     for (Director director : film.getDirectors()) {
                         try {
@@ -135,10 +135,10 @@ public class DirectorDbStorage implements DirectorStorage {
                         }
                     }
                 }
-            } catch (DataAccessException e){
-                    throw new SQLErrorTransaction("Режиссёр уже добавлен в фильм:" + film);
-                }
+            } catch (DataAccessException e) {
+                throw new SQLErrorTransaction("Режиссёр уже добавлен в фильм:" + film);
             }
+        }
     }
 
     @Override
@@ -147,7 +147,7 @@ public class DirectorDbStorage implements DirectorStorage {
         String sqlQuery = "DELETE FROM director_films " +
                 "WHERE film_id = ?";
         try {
-        jdbcTemplate.update(sqlQuery, String.valueOf(filmId));
+            jdbcTemplate.update(sqlQuery, String.valueOf(filmId));
         } catch (DataAccessException e) {
             throw new SQLErrorTransaction("Не удалось удалить данные режиссёра из фильма с id:" + filmId);
         }
@@ -156,10 +156,10 @@ public class DirectorDbStorage implements DirectorStorage {
     @Override
     public Director mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         try {
-        return Director.builder()
-                .id(resultSet.getLong("id"))
-                .name(resultSet.getString("Name"))
-                .build();
+            return Director.builder()
+                    .id(resultSet.getLong("id"))
+                    .name(resultSet.getString("Name"))
+                    .build();
         } catch (SQLException e) {
             throw new SQLErrorTransaction("Не удалось создать объект режиссёра на основе базы данных");
         }
