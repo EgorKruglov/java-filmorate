@@ -121,7 +121,6 @@ public class UserDbStorage  implements UserStorage {
         String sqlQuery = "INSERT INTO friendship(user_id1, user_id2) " +
                 "VALUES (?, ?)";
 
-
         try {
             jdbcTemplate.update(sqlQuery, userId, friendId);
         } catch (DataAccessException e) {
@@ -200,6 +199,17 @@ public class UserDbStorage  implements UserStorage {
         }
     }
 
+    @Override
+    public void deleteUser(Integer userId) {
+        getUserById(userId);
+        String sqlQuery = "DELETE FROM USERS WHERE USER_ID = ?;";
+        try {
+            jdbcTemplate.update(sqlQuery, userId);
+        } catch (DataAccessException e) {
+            throw new SQLErrorTransaction("Не удалось удалить данные пользователя с id:" + userId);
+        }
+    }
+
     private Integer getFriendshipId(Integer userId, Integer friendId) {
         String sqlQuery = "SELECT friendship_id\n" +
                 "FROM friendship\n" +
@@ -242,12 +252,5 @@ public class UserDbStorage  implements UserStorage {
         } catch (SQLException e) {
             throw new SQLErrorTransaction("Не удалось создать объект пользователя на основе базы данных");
         }
-    }
-
-    @Override
-    public void deleteUser(Integer userId) {
-        getUserById(userId);
-        String sqlQuery = "DELETE FROM USERS WHERE USER_ID = ?;";
-        jdbcTemplate.update(sqlQuery, userId);
     }
 }

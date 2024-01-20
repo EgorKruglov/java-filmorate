@@ -20,7 +20,6 @@ import java.util.List;
 @RequestMapping("/directors")
 @AllArgsConstructor
 public class DirectorController {
-
     private final DirectorService directorService;
 
     @PostMapping

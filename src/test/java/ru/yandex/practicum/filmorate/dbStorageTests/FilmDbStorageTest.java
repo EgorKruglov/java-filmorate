@@ -28,13 +28,11 @@ public class FilmDbStorageTest {
     private final JdbcTemplate jdbcTemplate;
     private FilmStorage filmStorage;
     private UserDbStorage userStorage;
-    private DirectorStorage directorStorage;
 
     @BeforeEach
     public void updateDb() {
         filmStorage = new FilmDbStorage(jdbcTemplate, new UserDbStorage(jdbcTemplate), new DirectorDbStorage(jdbcTemplate));
         userStorage = new UserDbStorage(jdbcTemplate);
-        directorStorage = new DirectorDbStorage(jdbcTemplate);
     }
 
     @Test

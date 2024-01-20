@@ -5,7 +5,6 @@ import ru.yandex.practicum.filmorate.model.Review;
 import java.util.List;
 
 public interface ReviewStorage {
-
     public Review addReview(Review review);
 
     public Review updateReview(Review review);

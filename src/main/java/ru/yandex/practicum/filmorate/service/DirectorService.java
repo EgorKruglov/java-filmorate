@@ -14,7 +14,6 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class DirectorService {
-
     private final DirectorStorage directorStorage;
 
     public Director createDirector(Director director) {

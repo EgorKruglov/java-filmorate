@@ -51,7 +51,7 @@ public class UserService {
         if (userId < 0) {
             throw new UserNotFoundException("Id пользователя должен быть неотрицательным");
         }
-        log.info("Получение пользователя по ID: {}", userId);
+        log.info("Получение пользователя по id: {}", userId);
         return userStorage.getUserById(userId);
     }
 
@@ -75,7 +75,7 @@ public class UserService {
         if (userId < 0 || friendId < 0) {
             throw new UserNotFoundException("Id пользователя должен быть неотрицательным");
         }
-        log.info("Пользователь {} удаляет из друзей пользователя {}", userId, friendId);
+        log.info("Удаление пользователя id:{} из друзей пользователя id:{}", friendId, userId);
         userStorage.deleteFriend(userId, friendId);
         Event event = new Event(userId, EventType.FRIEND, EventOperation.REMOVE, friendId);
         eventService.add(event);
@@ -85,7 +85,7 @@ public class UserService {
         if (userId < 0) {
             throw new UserNotFoundException("Id пользователя должен быть неотрицательным");
         }
-        log.info("Получение списка друзей пользователя по ID: {}", userId);
+        log.info("Получение списка друзей пользователя с id" + userId);
         return userStorage.getUsersFriends(userId);
     }
 
@@ -101,13 +101,16 @@ public class UserService {
     }
 
     public List<Event> getUserEvent(Integer userId) {
-        log.info("Просмотр действий пользователя id:" + userId);
+        log.info("Получение списка действий пользователя c id:" + userId);
         getUserById(userId);
         return eventService.getUserEvent(userId);
     }
 
     public void deleteUser(Integer userId) {
-        log.info("Удаление фильма id = {}", userId);
+        if (userId < 0) {
+            throw new UserNotFoundException("Id пользователя должен быть неотрицательным");
+        }
+        log.info("Удаление пользователя c id:" + userId);
         userStorage.deleteUser(userId);
     }
 }

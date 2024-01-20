@@ -15,7 +15,7 @@ import java.util.Map;
 @Builder(toBuilder = true)
 public class Director {
     private Long id;
-    @NotBlank(message = "Поле 'Имя директора' не можкт быть пустым")
+    @NotBlank(message = "Поле 'Имя директора' не может быть пустым")
     private String name;
 
     public Map<String, Object> toMap() {

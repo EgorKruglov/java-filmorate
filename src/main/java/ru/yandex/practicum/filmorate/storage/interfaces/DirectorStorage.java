@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface DirectorStorage {
-
     Director createDirector(Director director);
 
     Director updateDirector(Director director);

@@ -15,6 +15,20 @@ import java.util.Map;
 @NoArgsConstructor
 @Data
 public class User {
+    @Positive
+    private Integer id;
+
+    @NotBlank(message = "Email не может быть пустым")
+    @Email(message = "Некорректный email адрес")
+    private String email;
+
+    @NotBlank(message = "Login не может быть пустым")
+    @Pattern(regexp = "^(?!\\s*$)[\\S]+", message = "Login не может содержать пробелы")
+    private String login;
+
+    private String name;
+    @Past(message = "День рождения не может быть в будущем")
+    private LocalDate birthday;
 
     public User(Integer id, String email, String login, String name, LocalDate birthday) {
         this.id = id;
@@ -30,22 +44,6 @@ public class User {
         this.name = name;
         this.birthday = birthday;
     }
-
-    @Positive
-    private Integer id;
-
-    @NotBlank(message = "Email не может быть пустым")
-    @Email(message = "Некорректный email адрес")
-    private String email;
-
-    @NotBlank(message = "Login не может быть пустым")
-    @Pattern(regexp = "^(?!\\s*$)[\\S]+", message = "Login не может содержать пробелы")
-    private String login;
-
-    private String name;
-
-    @Past(message = "День рождения не может быть в будущем")
-    private LocalDate birthday;
 
     public Map<String,Object> toMap() {
         Map<String, Object> userMap = new HashMap<>();

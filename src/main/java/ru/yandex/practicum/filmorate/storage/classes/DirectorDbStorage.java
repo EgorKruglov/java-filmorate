@@ -16,7 +16,6 @@ import java.util.Map;
 @Component
 @AllArgsConstructor
 public class DirectorDbStorage implements DirectorStorage {
-
     private final JdbcTemplate jdbcTemplate;
 
     @Override

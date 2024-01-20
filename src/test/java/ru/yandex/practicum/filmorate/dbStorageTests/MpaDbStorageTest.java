@@ -17,8 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class MpaDbStorageTest {
-
-
     private final JdbcTemplate jdbcTemplate;
     private MpaStorage mpaStorage;
 

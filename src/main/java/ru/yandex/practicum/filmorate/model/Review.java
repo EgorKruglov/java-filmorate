@@ -14,22 +14,16 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Review {
-
     @Positive
     private Integer reviewId;
-
     @NotBlank
     private String content;
-
     @NotNull
     private Boolean isPositive;
-
     @NotNull
     private Integer userId;
-
     @NotNull
     private Integer filmId;
-
     private Integer useful;  // рейтинг полезности
 
     public Review(Integer reviewId, String content, Boolean isPositive, Integer userId, Integer filmId) {

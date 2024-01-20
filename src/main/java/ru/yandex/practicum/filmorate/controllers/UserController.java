@@ -114,13 +114,15 @@ public class UserController {
 
     @GetMapping("/{userId}/feed")
     public List<Event> getUserFeed(@PathVariable Integer userId) {
+        List<Event> events = userService.getUserEvent(userId);
         log.info("Отправлен список действий пользователя id:" + userId);
-        return userService.getUserEvent(userId);
+        return events;
     }
 
     @DeleteMapping(value = "/{userId}")
-    public void deleteUser(@PathVariable Integer userId) {
-        log.info("Удаление пользователя id:" + userId);
+    public Map<String, String> deleteUser(@PathVariable Integer userId) {
         userService.deleteUser(userId);
+        log.info("Удалён пользователь id:" + userId);
+        return Map.of("message", "Удалён пользователь id:" + userId);
     }
 }

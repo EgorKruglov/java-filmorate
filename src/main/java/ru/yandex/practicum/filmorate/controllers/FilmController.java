@@ -103,7 +103,6 @@ public class FilmController {
 
     @GetMapping("/search")
     public List<Film> searchFilms(@RequestParam String query, @RequestParam String by) {
-        log.info("Получен GET-запрос /films/search?query={}&by={}", query, by);
         List<Film> filmsList = filmService.searchFilms(query, by);
         log.info("Отправлен ответ на GET-запрос /films/search?query={}&by={} c телом {}", query, by, filmsList);
         return filmsList;
@@ -117,14 +116,14 @@ public class FilmController {
 
     @GetMapping("/common")
     public List<Film> getCommonFilms(@RequestParam Integer userId, @RequestParam Integer friendId) {
-        log.info("Получение общих фильмов для пользоветлей id: " + userId + " и id: " + friendId);
+        log.info("Получение общих фильмов для пользователей id: " + userId + " и id: " + friendId);
         return filmService.getCommonFilms(userId, friendId);
     }
 
     @GetMapping("/popular")
     public List<Film> getPopularFilmsByGenreAndYear(@RequestParam(defaultValue = "10") Integer count,
-                                      @RequestParam Optional<Integer> genreId,
-                                      @RequestParam Optional<Integer> year) {
+                                                    @RequestParam Optional<Integer> genreId,
+                                                    @RequestParam Optional<Integer> year) {
         log.info("Получение топ популярных фильмов");
         return filmService.getPopularFilms(count, genreId, year);
     }
