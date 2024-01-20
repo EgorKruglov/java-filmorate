@@ -20,7 +20,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class DirectorDbStorage implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final String SQL_QUERY_DIRECTOR_FROM_DB = "SELECT * FROM director";
+    private static final String SQL_QUERY_DIRECTOR_FROM_DB = "SELECT * FROM director";
 
     @Override
     public Director createDirector(Director director) {
