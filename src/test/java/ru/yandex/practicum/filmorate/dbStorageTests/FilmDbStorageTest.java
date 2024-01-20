@@ -30,7 +30,7 @@ public class FilmDbStorageTest {
 
     @BeforeEach
     public void updateDb() {
-        filmStorage = new FilmDbStorage(jdbcTemplate, new UserDbStorage(jdbcTemplate), new DirectorDbStorage(jdbcTemplate));
+        filmStorage = new FilmDbStorage(jdbcTemplate, new DirectorDbStorage(jdbcTemplate));
         userStorage = new UserDbStorage(jdbcTemplate);
     }
 

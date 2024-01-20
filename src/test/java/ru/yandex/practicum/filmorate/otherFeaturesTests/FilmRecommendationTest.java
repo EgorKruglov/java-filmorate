@@ -6,14 +6,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.storage.classes.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.classes.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.classes.UserDbStorage;
-import ru.yandex.practicum.filmorate.storage.classes.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 import java.time.LocalDate;
@@ -27,7 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FilmRecommendationTest {
     private final JdbcTemplate jdbcTemplate;
     private FilmStorage filmStorage;
-    private UserDbStorage userStorage;
     private DirectorDbStorage directorStorage;
     User user1;
     Film film1;
@@ -36,9 +35,9 @@ public class FilmRecommendationTest {
 
     @BeforeEach
     public void updateDb() {
-        userStorage = new UserDbStorage(jdbcTemplate);
+        UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
         directorStorage = new DirectorDbStorage(jdbcTemplate);
-        filmStorage = new FilmDbStorage(jdbcTemplate, userStorage, directorStorage);
+        filmStorage = new FilmDbStorage(jdbcTemplate, directorStorage);
         user1 = userStorage.addUser(new User("user1@email.ru", "vanya123", "Ivan Petrov", LocalDate.of(1990, 1, 1)));
         film1 = filmStorage.addFilm(new Film(1, "Film One", "description1", LocalDate.of(2010, 5, 10),
                 90, new Mpa(1, null), Set.of(new Genre(1, null), new Genre(2, null)), List.of()));

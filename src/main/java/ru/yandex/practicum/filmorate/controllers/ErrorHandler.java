@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.yandex.practicum.filmorate.extraExceptions.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.extraExceptions.FilmAlreadyExistException;
 import ru.yandex.practicum.filmorate.extraExceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.extraExceptions.ReviewNotFoundException;
@@ -12,7 +13,6 @@ import ru.yandex.practicum.filmorate.extraExceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.extraExceptions.UserIdEqualsFriendIdException;
 import ru.yandex.practicum.filmorate.extraExceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.extraExceptions.ValidationException;
-import ru.yandex.practicum.filmorate.extraExceptions.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 import java.sql.SQLException;

@@ -17,7 +17,6 @@ import ru.yandex.practicum.filmorate.storage.classes.ReviewDbStorage;
 import ru.yandex.practicum.filmorate.storage.classes.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.ReviewStorage;
-import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -30,18 +29,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ReviewDbStorageTest {
     private final JdbcTemplate jdbcTemplate;
     private ReviewStorage reviewStorage;
-    private UserDbStorage userStorage;
-    private FilmDbStorage filmStorage;
-    private DirectorStorage directorStorage;
     User user;
     Film film;
 
     @BeforeEach
     public void updateDb() {
         reviewStorage = new ReviewDbStorage(jdbcTemplate);
-        userStorage = new UserDbStorage(jdbcTemplate);
-        directorStorage = new DirectorDbStorage(jdbcTemplate);
-        filmStorage = new FilmDbStorage(jdbcTemplate, userStorage, directorStorage);
+        UserDbStorage userStorage = new UserDbStorage(jdbcTemplate);
+        DirectorStorage directorStorage = new DirectorDbStorage(jdbcTemplate);
+        FilmDbStorage filmStorage = new FilmDbStorage(jdbcTemplate, directorStorage);
         user = userStorage.addUser(new User("user@email.ru", "vanya123", "Ivan Petrov", LocalDate.of(1990,
                 1, 1)));
         film = filmStorage.addFilm(new Film("Film One", "description1", LocalDate.of(2010, 5, 10),

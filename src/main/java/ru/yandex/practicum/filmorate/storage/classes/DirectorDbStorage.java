@@ -20,7 +20,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public Director createDirector(Director director) {
-        // Создать режисера
+        // Создать режиссёра
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("director")
                 .usingGeneratedKeyColumns("id");
@@ -30,7 +30,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public Director updateDirector(Director director) {
-        // Обновить данные о режисере
+        // Обновить данные о режиссёре
         String sqlQuery = "UPDATE director " +
                 "SET  name = ? " +
                 "WHERE id = ?;";
@@ -40,7 +40,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public void deleteDirector(Long directorId) {
-        // Удалить данные о режисере
+        // Удалить данные о режиссёре
         String sqlQuery = "DELETE FROM director " +
                 "WHERE id=?";
         jdbcTemplate.update(sqlQuery, String.valueOf(directorId));
@@ -48,7 +48,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public List<Director> getDirectorsList() {
-        // Получить список режисеров
+        // Получить список режиссёров
         List<Director> directors;
         String sqlQuery = "SELECT * " +
                 "FROM director";
@@ -58,7 +58,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public Director getDirectorById(Long directorId) {
-        // Получить данные о режисере
+        // Получить данные о режиссёре
         String sqlQuery = "SELECT * " +
                 "FROM director " +
                 "WHERE id = ?";
@@ -67,7 +67,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public List<Director> getDirectorByFilmId(Long filmId) {
-        // Получить режисера по ID фильма
+        // Получить режиссёра по ID фильма
         String sqlQuery = "SELECT d.id, d.name " +
                 "FROM director_films AS df " +
                 "LEFT JOIN director AS d ON df.director_id=d.id " +
@@ -80,7 +80,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public boolean checkDirectorExistInDb(Long id) {
-        // Узнать есть ли данный режисер в базе
+        // Узнать есть ли данный режиссёр в базе
         String sqlQuery = "SELECT * " +
                 "FROM director " +
                 "WHERE id = ?";
@@ -89,7 +89,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public void addDirectorToFilm(Film film) {
-        // Добавить режисера к фильму
+        // Добавить режиссёра к фильму
         String sqlQuery = "INSERT into director_films (film_id, director_id) values(?, ?);";
         if (film.getDirectors() != null) {
             if (!film.getDirectors().isEmpty()) {
@@ -102,7 +102,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public void deleteDirectorsFromFilm(Long filmId) {
-        // Удалить данные о режисере по ID фильма
+        // Удалить данные о режиссёре по ID фильма
         String sqlQuery = "DELETE FROM director_films " +
                 "WHERE film_id = ?";
         jdbcTemplate.update(sqlQuery, String.valueOf(filmId));
