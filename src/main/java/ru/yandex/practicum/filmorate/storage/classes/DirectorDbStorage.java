@@ -20,6 +20,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class DirectorDbStorage implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final String SQL_QUERY_DIRECTOR_FROM_DB = "SELECT * FROM director";
 
     @Override
     public Director createDirector(Director director) {
@@ -67,10 +68,8 @@ public class DirectorDbStorage implements DirectorStorage {
     public List<Director> getDirectorsList() {
         // Получить список режиссёров
         List<Director> directors;
-        String sqlQuery = "SELECT * " +
-                "FROM director";
         try {
-            return jdbcTemplate.query(sqlQuery, this::mapRow);
+            return jdbcTemplate.query(SQL_QUERY_DIRECTOR_FROM_DB, this::mapRow);
         } catch (DataAccessException e) {
             throw new SQLErrorTransaction("Не удалось отправить список режиссёров");
         }
@@ -79,9 +78,7 @@ public class DirectorDbStorage implements DirectorStorage {
     @Override
     public Director getDirectorById(Long directorId) {
         // Получить данные о режиссёре
-        String sqlQuery = "SELECT * " +
-                "FROM director " +
-                "WHERE id = ?";
+        String sqlQuery = SQL_QUERY_DIRECTOR_FROM_DB + " WHERE id = ?";
         try {
             return jdbcTemplate.queryForObject(sqlQuery, this::mapRow, directorId);
         } catch (DataAccessException e) {
@@ -110,9 +107,7 @@ public class DirectorDbStorage implements DirectorStorage {
     @Override
     public boolean checkDirectorExistInDb(Long id) {
         // Узнать есть ли данный режиссёр в базе
-        String sqlQuery = "SELECT * " +
-                "FROM director " +
-                "WHERE id = ?";
+        String sqlQuery = SQL_QUERY_DIRECTOR_FROM_DB + " WHERE id = ?";
         try {
             return !jdbcTemplate.query(sqlQuery, this::mapRow, id).isEmpty();
         } catch (DataAccessException e) {

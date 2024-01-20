@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.model.EventOperation;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.classes.ReviewDbStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.EventStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.ReviewStorage;
 
 import java.util.List;
@@ -19,12 +20,12 @@ import java.util.List;
 @Service
 public class ReviewService {
     private final ReviewStorage reviewStorage;
-    private final EventService eventService;
+    private final EventStorage eventStorage;
 
     @Autowired
-    public ReviewService(ReviewDbStorage reviewStorage, EventService eventService) {
+    public ReviewService(ReviewDbStorage reviewStorage, EventStorage eventStorage) {
         this.reviewStorage = reviewStorage;
-        this.eventService = eventService;
+        this.eventStorage = eventStorage;
     }
 
     public Review addReview(Review review) {
@@ -37,7 +38,7 @@ public class ReviewService {
         log.info("Добавление отзыва на фильм: {}", review);
         Review reviewFromDb = reviewStorage.addReview(review);
         Event event = new Event(reviewFromDb.getUserId(), EventType.REVIEW, EventOperation.ADD, reviewFromDb.getReviewId());
-        eventService.add(event);
+        eventStorage.add(event);
         return reviewFromDb;
     }
 
@@ -51,7 +52,7 @@ public class ReviewService {
         log.info("Обновление отзыва на фильм: {}", review);
         Review reviewFromDb = reviewStorage.updateReview(review);
         Event event = new Event(reviewFromDb.getUserId(), EventType.REVIEW, EventOperation.UPDATE, reviewFromDb.getReviewId());
-        eventService.add(event);
+        eventStorage.add(event);
         return reviewFromDb;
     }
 
@@ -62,7 +63,7 @@ public class ReviewService {
         log.info("Удаление отзыва на фильм с id:" + reviewId);
         Review reviewFromDb = reviewStorage.getReviewById(reviewId);
         Event event = new Event(reviewFromDb.getUserId(), EventType.REVIEW, EventOperation.REMOVE, reviewId);
-        eventService.add(event);
+        eventStorage.add(event);
         reviewStorage.deleteReview(reviewId);
     }
 

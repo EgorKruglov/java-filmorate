@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.EventOperation;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.classes.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.EventStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import java.util.List;
@@ -18,12 +19,12 @@ import java.util.List;
 @Service
 public class UserService {
     private final UserStorage userStorage;
-    private final EventService eventService;
+    private final EventStorage eventStorage;
 
     @Autowired
-    public UserService(UserDbStorage userStorage, EventService eventService) {
+    public UserService(UserDbStorage userStorage, EventStorage eventStorage) {
         this.userStorage = userStorage;
-        this.eventService = eventService;
+        this.eventStorage = eventStorage;
     }
 
     public User addUser(User user) {
@@ -65,7 +66,7 @@ public class UserService {
         log.info("Пользователь {} добавляет в друзья пользователя {}", userId, friendId);
         userStorage.addFriend(userId, friendId);
         Event event = new Event(userId, EventType.FRIEND, EventOperation.ADD, friendId);
-        eventService.add(event);
+        eventStorage.add(event);
     }
 
     public void deleteFriend(Integer userId, Integer friendId) {
@@ -78,7 +79,7 @@ public class UserService {
         log.info("Удаление пользователя id:{} из друзей пользователя id:{}", friendId, userId);
         userStorage.deleteFriend(userId, friendId);
         Event event = new Event(userId, EventType.FRIEND, EventOperation.REMOVE, friendId);
-        eventService.add(event);
+        eventStorage.add(event);
     }
 
     public List<User> getUserFriends(Integer userId) {
@@ -103,7 +104,7 @@ public class UserService {
     public List<Event> getUserEvent(Integer userId) {
         log.info("Получение списка действий пользователя c id:" + userId);
         getUserById(userId);
-        return eventService.getUserEvent(userId);
+        return eventStorage.getUserEvent(userId);
     }
 
     public void deleteUser(Integer userId) {

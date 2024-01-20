@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.classes.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.classes.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.EventStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 import java.util.ArrayList;
@@ -32,14 +33,14 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final DirectorStorage directorStorage;
-    private final EventService eventService;
+    private final EventStorage eventStorage;
     private final GenreDbStorage genreDbStorage;
 
     @Autowired
-    public FilmService(FilmDbStorage filmStorage, EventService eventService, DirectorStorage directorStorage, GenreDbStorage genreDbStorage) {
+    public FilmService(FilmDbStorage filmStorage, DirectorStorage directorStorage, EventStorage eventStorage, GenreDbStorage genreDbStorage) {
         this.filmStorage = filmStorage;
         this.directorStorage = directorStorage;
-        this.eventService = eventService;
+        this.eventStorage = eventStorage;
         this.genreDbStorage = genreDbStorage;
     }
 
@@ -73,7 +74,7 @@ public class FilmService {
         log.info("Добавление лайка для фильма с Id {} от пользователя с Id {}", filmId, userId);
         filmStorage.addLike(filmId, userId);
         Event event = new Event(userId, EventType.LIKE, EventOperation.ADD, filmId);
-        eventService.add(event);
+        eventStorage.add(event);
     }
 
     public void deleteLike(Integer filmId, Integer userId) {
@@ -83,7 +84,7 @@ public class FilmService {
         log.info("Удаление лайка для фильма с Id {} от пользователя с Id {}", filmId, userId);
         filmStorage.deleteLike(filmId, userId);
         Event event = new Event(userId, EventType.LIKE, EventOperation.REMOVE, filmId);
-        eventService.add(event);
+        eventStorage.add(event);
     }
 
     public List<Film> getTopFilms(int count) {
