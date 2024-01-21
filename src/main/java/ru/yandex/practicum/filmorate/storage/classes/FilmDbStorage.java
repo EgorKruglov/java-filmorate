@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.classes;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -10,24 +11,26 @@ import ru.yandex.practicum.filmorate.extraExceptions.SQLErrorTransaction;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /* Класс для сохранения данных о фильмах приложения внутри базы данных H2 */
 @Component
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final UserStorage userStorage;
+    private final DirectorStorage directorStorage;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, UserDbStorage userStorage) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, DirectorStorage directorStorage) {
         this.jdbcTemplate = jdbcTemplate;
-        this.userStorage = userStorage;
+        this.directorStorage = directorStorage;
     }
 
     @Override
@@ -56,6 +59,7 @@ public class FilmDbStorage implements FilmStorage {
 
         fillFilmMpaNames(film);
         fillFilmGenres(film);
+        directorStorage.addDirectorToFilm(film);
         return film;
     }
 
@@ -73,12 +77,12 @@ public class FilmDbStorage implements FilmStorage {
                     "WHERE film_id = ?";
 
             jdbcTemplate.update(sqlQuery,
-            film.getName(),
-            film.getDescription(),
-            film.getReleaseDate(),
-            film.getDuration(),
-            film.getMpa().getId(),
-            film.getId());
+                    film.getName(),
+                    film.getDescription(),
+                    film.getReleaseDate(),
+                    film.getDuration(),
+                    film.getMpa().getId(),
+                    film.getId());
         } catch (DataAccessException e) {
             throw new SQLErrorTransaction("Не удалось обновить фильм");
         }
@@ -106,6 +110,8 @@ public class FilmDbStorage implements FilmStorage {
 
         fillFilmMpaNames(film);
         fillFilmGenres(film);
+        directorStorage.deleteDirectorsFromFilm(Long.valueOf(film.getId()));
+        directorStorage.addDirectorToFilm(film);
         return film;
     }
 
@@ -118,6 +124,7 @@ public class FilmDbStorage implements FilmStorage {
             for (Film film : films) {
                 fillFilmMpaNames(film);
                 fillFilmGenres(film);
+                directorStorage.getDirectorByFilmId(Long.valueOf(film.getId()));
             }
             return films;
         } catch (DataAccessException e) {
@@ -142,8 +149,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void addLike(Integer filmId, Integer userId) {
-        userStorage.getUserById(userId);
-        getFilmById(filmId);
         try {
             String sqlQuery = "INSERT INTO film_likes(user_id, film_id)\n" +
                     "VALUES (?, ?)";
@@ -155,21 +160,16 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void deleteLike(Integer filmId, Integer userId) {
-        userStorage.getUserById(userId);
-        getFilmById(filmId);
         try {
             String sqlQuery = "DELETE\n" +
                     "FROM film_likes\n" +
                     "WHERE user_id = ?\n" +
-                    "  AND film_id = ?\n" +
-                    "LIMIT 1";
+                    "  AND film_id = ?;";
             jdbcTemplate.update(sqlQuery, userId, filmId);
         } catch (DataAccessException e) {
-            e.printStackTrace();
             throw new SQLErrorTransaction("Не удалось удалить лайк с фильма id:" + filmId);
         }
     }
-
 
     @Override
     public List<Film> getTopFilms(int count) {
@@ -180,7 +180,7 @@ public class FilmDbStorage implements FilmStorage {
                 "f.duration, " +
                 "f.mpa_id, " +
                 "COUNT(fl.user_id) AS likes_count " +
-                "FROM films f " + // Исправлено на правильное имя таблицы
+                "FROM films f " +
                 "LEFT JOIN film_likes fl ON fl.film_id = f.film_id " +
                 "GROUP BY f.film_id " +
                 "ORDER BY likes_count DESC NULLS LAST, f.release_date DESC " +
@@ -193,8 +193,60 @@ public class FilmDbStorage implements FilmStorage {
             }
             return films;
         } catch (DataAccessException e) {
-            e.printStackTrace();
             throw new SQLErrorTransaction("Не удалось отправить список фильмов");
+        }
+    }
+
+    @Override
+    public List<Film> getFilmRecommendations(Integer userId) {
+        /*Запрос для получения id другого пользователя, у которого больше всего лайков на те фильмы, что у пользователя
+        userId. И у которого просто больше всех лайков, чтобы было больше рекомендаций.*/
+        String sqlQuery = "SELECT user_id\n" +
+                "FROM (\n" +
+                "    SELECT fl.user_id, COUNT(fl.film_id) AS like_count\n" +
+                "    FROM film_likes fl\n" +
+                "    WHERE fl.film_id IN (\n" +
+                "        SELECT film_id\n" +
+                "        FROM film_likes\n" +
+                "        WHERE user_id = ?\n" +
+                "    )\n" +
+                "    AND fl.user_id <> ?\n" +
+                "    GROUP BY fl.user_id\n" +
+                "    ORDER BY like_count DESC\n" +
+                "    LIMIT 1\n" +
+                ") AS user_likes;";
+
+        /*Запрос для получения фильмов найденного пользователя, исключая фильмы с лайками пользователя userId.*/
+        String sqlQuery2 = "SELECT f.film_id, " +
+                "f.name, " +
+                "f.description, " +
+                "f.release_date, " +
+                "f.duration, " +
+                "f.mpa_id, " +
+                "FROM films f\n" +
+                "JOIN film_likes fl ON f.film_id = fl.film_id AND fl.user_id = ?\n" +
+                "LEFT JOIN film_likes fl2 ON f.film_id = fl2.film_id AND fl2.user_id = ?\n" +
+                "WHERE fl2.user_id IS NULL;";
+
+        Integer commonUserId;
+
+        try {
+            commonUserId = jdbcTemplate.queryForObject(sqlQuery, Integer.class, userId, userId);
+        } catch (EmptyResultDataAccessException e) {  // Если не нашлось такого пользователя (нет лайков/слишком уникальные лайки)
+            return List.of();
+        } catch (DataAccessException e) {
+            throw new SQLErrorTransaction("Не удалось отправить список рекомендованных фильмов");
+        }
+
+        try {
+            List<Film> films = jdbcTemplate.query(sqlQuery2, this::mapRowToFilm, commonUserId, userId);
+            for (Film film : films) {
+                fillFilmMpaNames(film);
+                fillFilmGenres(film);
+            }
+            return films;
+        } catch (DataAccessException e) {
+            throw new SQLErrorTransaction("Не удалось отправить список рекомендованных фильмов");
         }
     }
 
@@ -232,6 +284,47 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
+    @Override
+    public List<Film> getSortedDirectorFilms(Long directorId, String sortBy) {
+        List<Film> foundedFilm;
+        String sqlQuery;
+        switch (sortBy) {
+            case "year":
+                try {
+                    sqlQuery = "SELECT f.*, m.name FROM FILMS f " +
+                            "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                            "LEFT JOIN director_films df ON f.film_id = df.film_id " +
+                            "LEFT JOIN director d ON df.director_id = d.id " + " WHERE d.id = ? " +
+                            "ORDER BY EXTRACT(YEAR FROM CAST(release_date AS date))";
+                    foundedFilm = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, directorId);
+                    for (Film film : foundedFilm) {
+                        fillFilmMpaNames(film);
+                        fillFilmGenres(film);
+                    }
+                    return foundedFilm;
+                } catch (DataAccessException e) {
+                    e.printStackTrace();
+                    throw new SQLErrorTransaction("Не удалось отправить список фильмов");
+                }
+            case "likes":
+                sqlQuery = "SELECT f.*, r.name FROM FILMS f " +
+                        "LEFT JOIN mpa r ON f.mpa_id = r.mpa_id " +
+                        "LEFT JOIN director_films df ON f.film_id = df.film_id " +
+                        "LEFT JOIN director d ON df.director_id = d.id " +
+                        "LEFT JOIN film_likes fl ON f.film_id = fl.film_id " +
+                        "WHERE d.id = ? GROUP BY f.film_id " +
+                        "ORDER BY COUNT(fl.user_id) DESC";
+                foundedFilm = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, directorId);
+                for (Film film : foundedFilm) {
+                    fillFilmMpaNames(film);
+                    fillFilmGenres(film);
+                }
+                return foundedFilm;
+            default:
+                throw new Error("Unknown Sort Type");
+        }
+    }
+
     private Film mapRowToFilm(ResultSet resultSet, int i) {
         try {
             return new Film(resultSet.getInt("film_id"),
@@ -240,8 +333,9 @@ public class FilmDbStorage implements FilmStorage {
                     resultSet.getDate("release_date").toLocalDate(),
                     resultSet.getInt("duration"),
                     new Mpa(resultSet.getInt("mpa_id"), null),
-                    new HashSet<>()
-                    );
+                    new HashSet<>(),
+                    directorStorage.getDirectorByFilmId(resultSet.getLong("film_id"))
+            );
         } catch (SQLException e) {
             throw new SQLErrorTransaction("Не удалось создать объект фильма на основе бд");
         }
@@ -267,6 +361,88 @@ public class FilmDbStorage implements FilmStorage {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new SQLErrorTransaction("Не удалось создать объект жанра фильма на основе бд");
+        }
+    }
+
+    @Override
+    public List<Film> searchFilmsByDirector(String director) {
+        String sqlQuery = "SELECT f.*, m.name " +
+                "FROM films f " +
+                "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN director_films df ON f.film_id = df.film_id " +
+                "LEFT JOIN director d ON df.director_id = d.id " +
+                "WHERE lower(d.name) LIKE lower(?) " +
+                "ORDER BY (SELECT COUNT(*) FROM film_likes fl WHERE fl.film_id = f.film_id) DESC";
+        List<Film> foundedFilms = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, "%" + director + "%");
+        for (Film film : foundedFilms) {
+            fillFilmMpaNames(film);
+            fillFilmGenres(film);
+        }
+        return foundedFilms;
+    }
+
+    @Override
+    public List<Film> searchFilmsByTitle(String title) {
+        String sqlQuery = "SELECT f.*, m.name " +
+                "FROM films f " +
+                "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "WHERE lower(f.name) LIKE lower(?) " +
+                "ORDER BY (SELECT COUNT(*) FROM film_likes fl WHERE fl.film_id = f.film_id) DESC";
+        List<Film> foundedFilms = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, "%" + title + "%");
+        for (Film film : foundedFilms) {
+            fillFilmMpaNames(film);
+            fillFilmGenres(film);
+        }
+        return foundedFilms;
+    }
+
+    @Override
+    public List<Film> searchFilmsByDirectorAndTitle(String query) {
+        String sqlQuery = "SELECT f.*, m.name " +
+                "FROM films f " +
+                "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
+                "LEFT JOIN director_films df ON f.film_id = df.film_id " +
+                "LEFT JOIN director d ON df.director_id = d.id " +
+                "WHERE lower(d.name) LIKE lower(?) OR lower(f.name) LIKE lower(?) " +
+                "ORDER BY (SELECT COUNT(*) FROM film_likes fl WHERE fl.film_id = f.film_id) DESC";
+        List<Film> foundedFilms = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, "%" + query + "%", "%" + query + "%");
+        for (Film film : foundedFilms) {
+            fillFilmMpaNames(film);
+            fillFilmGenres(film);
+        }
+        return foundedFilms;
+    }
+
+    @Override
+    public void deleteFilm(Integer filmId) {
+        getFilmById(filmId);
+        String sqlQuery = "DELETE FROM FILMS WHERE FILM_ID = ?;";
+        jdbcTemplate.update(sqlQuery, filmId);
+    }
+
+    @Override
+    public Collection<Film> getFilmsByUser(Integer id) {
+        Collection<Film> filmsFromDB =  jdbcTemplate
+                .query("SELECT * FROM films WHERE film_id IN (SELECT film_id FROM film_likes WHERE user_id = ?)",
+                        this::mapRowToFilm, id);
+        Set<Film> films = new HashSet<>();
+        for (Film f: filmsFromDB) {
+            films.add(getFilmById(f.getId()));
+        }
+        return films;
+    }
+
+    @Override
+    public Integer getLikesCount(Integer filmId) {
+        String sqlQuery = "SELECT COUNT(*)\n" +
+                "FROM FILMS F JOIN FILM_LIKES L ON F.FILM_ID = L.FILM_ID WHERE F.FILM_ID = ?;";
+        try {
+            Integer likesCount = jdbcTemplate.queryForObject(sqlQuery, Integer.class, filmId);
+            return likesCount;
+        } catch (EmptyResultDataAccessException e) {
+            return 0;
+        } catch (DataAccessException e) {
+            throw new SQLErrorTransaction("Не удалось посчитать количесво лайков");
         }
     }
 }

@@ -10,10 +10,10 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.classes.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.classes.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.classes.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,10 +26,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FilmDbStorageTest {
     private final JdbcTemplate jdbcTemplate;
     private FilmStorage filmStorage;
+    private UserDbStorage userStorage;
 
     @BeforeEach
     public void updateDb() {
-        filmStorage = new FilmDbStorage(jdbcTemplate, new UserDbStorage(jdbcTemplate));
+        filmStorage = new FilmDbStorage(jdbcTemplate, new DirectorDbStorage(jdbcTemplate));
+        userStorage = new UserDbStorage(jdbcTemplate);
     }
 
     @Test
@@ -70,8 +72,8 @@ public class FilmDbStorageTest {
 
     @Test
     public void testGetFilms() {
-        Film film1 = new Film("Film One", "description1", LocalDate.of(2010, 5, 10), 90, new Mpa(1, null));
-        Film film2 = new Film("Film Two", "description2", LocalDate.of(2010, 5, 10), 90, new Mpa(2, null), Set.of(new Genre(1, null), new Genre(2, null)));
+        Film film1 = new Film(1, "Film One", "description1", LocalDate.of(2010, 5, 10), 90, new Mpa(1, null), Set.of(), List.of());
+        Film film2 = new Film(2, "Film Two", "description2", LocalDate.of(2010, 5, 10), 90, new Mpa(2, null), Set.of(new Genre(1, null), new Genre(2, null)), List.of());
         Film addedFilm1 = filmStorage.addFilm(film1);
         Film addedFilm2 = filmStorage.addFilm(film2);
         List<Film> films = filmStorage.getFilms();
@@ -83,7 +85,7 @@ public class FilmDbStorageTest {
 
     @Test
     public void testGetFilmById() {
-        Film film = new Film("Film One", "description1", LocalDate.of(2010, 5, 10), 90, new Mpa(1, null));
+        Film film = new Film(1, "Film One", "description1", LocalDate.of(2010, 5, 10), 90, new Mpa(1, null), Set.of(), List.of());
         Film addedFilm = filmStorage.addFilm(film);
 
         Film retrievedFilm = filmStorage.getFilmById(addedFilm.getId());
@@ -96,14 +98,13 @@ public class FilmDbStorageTest {
 
     @Test
     public void testAddLike() {
-        Film film1 = new Film("Film One", "description1", LocalDate.of(2010, 5, 10), 90, new Mpa(1, null));
-        Film film2 = new Film("Film Two", "description2", LocalDate.of(2019, 5, 10), 90, new Mpa(2, null), Set.of(new Genre(1, null), new Genre(2, null)));
-        Film film3 = new Film("Film Three", "description3", LocalDate.of(2011, 5, 10), 90, new Mpa(3, null));
+        Film film1 = new Film(1, "Film One", "description1", LocalDate.of(2010, 5, 10), 90, new Mpa(1, null), Set.of(), List.of());
+        Film film2 = new Film(2, "Film Two", "description2", LocalDate.of(2019, 5, 10), 90, new Mpa(2, null), Set.of(new Genre(1, null), new Genre(2, null)), List.of());
+        Film film3 = new Film(3, "Film Three", "description3", LocalDate.of(2011, 5, 10), 90, new Mpa(3, null), Set.of(), List.of());
         Film addedFilm1 = filmStorage.addFilm(film1);
         Film addedFilm2 = filmStorage.addFilm(film2);
         Film addedFilm3 = filmStorage.addFilm(film3);
 
-        UserStorage userStorage = new UserDbStorage(jdbcTemplate);
         User user = userStorage.addUser(new User("user@email.ru", "vanya123", "Ivan Petrov", LocalDate.of(1990, 1, 1)));
 
         filmStorage.addLike(addedFilm1.getId(), user.getId());
@@ -120,14 +121,13 @@ public class FilmDbStorageTest {
 
     @Test
     public void testDeleteLike() {
-        Film film1 = new Film("Film One", "description1", LocalDate.of(2010, 5, 10), 90, new Mpa(1, null));
-        Film film2 = new Film("Film Two", "description2", LocalDate.of(2019, 5, 10), 90, new Mpa(2, null), Set.of(new Genre(1, null), new Genre(2, null)));
-        Film film3 = new Film("Film Three", "description3", LocalDate.of(2011, 5, 10), 90, new Mpa(3, null));
+        Film film1 = new Film(1, "Film One", "description1", LocalDate.of(2010, 5, 10), 90, new Mpa(1, null), Set.of(), List.of());
+        Film film2 = new Film(2, "Film Two", "description2", LocalDate.of(2019, 5, 10), 90, new Mpa(2, null), Set.of(new Genre(1, null), new Genre(2, null)), List.of());
+        Film film3 = new Film(3, "Film Three", "description3", LocalDate.of(2011, 5, 10), 90, new Mpa(3, null), Set.of(), List.of());
         Film addedFilm1 = filmStorage.addFilm(film1);
         Film addedFilm2 = filmStorage.addFilm(film2);
         Film addedFilm3 = filmStorage.addFilm(film3);
 
-        UserStorage userStorage = new UserDbStorage(jdbcTemplate);
         User user = userStorage.addUser(new User("user@email.ru", "vanya123", "Ivan Petrov", LocalDate.of(1990, 1, 1)));
 
         filmStorage.addLike(addedFilm1.getId(), user.getId());
@@ -149,13 +149,12 @@ public class FilmDbStorageTest {
 
     @Test
     public void testGetTopFilms() {
-        Film film1 = new Film("Film One", "description1", LocalDate.of(2010, 5, 10), 90, new Mpa(1, null));
-        Film film2 = new Film("Film Two", "description2", LocalDate.of(2019, 5, 10), 90, new Mpa(2, null), Set.of(new Genre(1, null), new Genre(2, null)));
+        Film film1 = new Film(1, "Film One", "description1", LocalDate.of(2010, 5, 10), 90, new Mpa(1, null), Set.of(), List.of());
+        Film film2 = new Film(2, "Film Two", "description2", LocalDate.of(2019, 5, 10), 90, new Mpa(2, null), Set.of(new Genre(1, null), new Genre(2, null)), List.of());
 
         Film addedFilm1 = filmStorage.addFilm(film1);
         Film addedFilm2 = filmStorage.addFilm(film2);
 
-        UserStorage userStorage = new UserDbStorage(jdbcTemplate);
         User user = userStorage.addUser(new User("user@email.ru", "vanya123", "Ivan Petrov", LocalDate.of(1990, 1, 1)));
 
         filmStorage.addLike(addedFilm2.getId(), user.getId());
@@ -165,7 +164,7 @@ public class FilmDbStorageTest {
         assertThat(topFilms.get(0)).isEqualTo(addedFilm2);
         assertThat(topFilms.get(1)).isEqualTo(addedFilm1);
 
-        Film film3 = new Film("Film Three", "description3", LocalDate.of(2011, 5, 10), 90, new Mpa(3, null));
+        Film film3 = new Film(3, "Film Three", "description3", LocalDate.of(2011, 5, 10), 90, new Mpa(3, null), Set.of(), List.of());
         Film addedFilm3 = filmStorage.addFilm(film3);
 
         filmStorage.addLike(addedFilm3.getId(), user.getId());

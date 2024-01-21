@@ -1,25 +1,27 @@
 
 # java-filmorate
 
+## Разработчики
+1. **[Круглов Егор](https://github.com/EgorKruglov)**
+    - Тимлид
+    - "Рекомендации"
+    - "Отзывы"
+
+2. **[Фёдоров Илья](https://github.com/il86ff)**
+    - "Лента событий"
+    - "Удаление фильмов и пользователей"
+    - "Общие фильмы"
+    - "Вывод самых популярных фильмов по жанру и годам" (совместно с Игорем Шуровым)
+
+3. **[Шуров Игорь](https://github.com/IgorShurov)**
+    - "Поиск"
+    - "Добавление режиссёров в фильмы"
+
+4. **[Алероева Мадина](https://github.com/Madina-Aleroeva)**
+    - Ревью кода
+
 ## [ER-diagram](https://dbdiagram.io/d/java-filmorate-version-1-656a005e56d8064ca0356fac)
-
 ![ER-diagram](images/ER-diagram.png)
-
-
-#### Получить все жанры
-```sql
-SELECT *
-FROM genres
-```
----
-
-#### Получить запись жанра с id=5
-```sql
-SELECT *
-FROM genres
-WHERE genre_id = 5;
-```
----
 
 #### Получить всех пользователей
 ```sql
